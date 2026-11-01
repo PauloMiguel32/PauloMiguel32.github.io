@@ -1,991 +1,315 @@
 <!DOCTYPE html>
 <html lang="en" class="dark scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>CrossFit Cainta - East Ortigas</title>
-    <link rel="manifest" href="manifest.webmanifest">
-    <meta name="theme-color" content="#080a0f">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="CF Cainta">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    <link rel="icon" type="image/png" href="icon-192.png">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-    <!-- Tailwind CSS CDN -->
+    <meta name="theme-color" content="#080a0f" />
+    <meta name="description" content="CrossFit Cainta East Ortigas. Strength, conditioning, and coaching in East Ortigas." />
+
+    <link rel="icon" type="image/png" href="icon-192.png" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
+
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brandCyan: '#00a8ff',
-                        brandCyanBright: '#00ccff',
-                        brandCyanDark: '#0077b6',
-                        brandDark: '#080a0f',
-                        brandCard: '#0d1017',
-                        corkWood: '#3e220f',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        heading: ['Oswald', 'sans-serif'],
-                        handwriting: ['Caveat', 'cursive', 'sans-serif'],
-                    }
-                }
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              brandCyan: '#00a8ff',
+              brandCyanBright: '#18d3ff',
+              brandDark: '#050b14',
+              brandCard: '#0d1723',
+              brandPanel: '#0f1d2d',
+              headerGlow: '#0a2037'
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              heading: ['Oswald', 'sans-serif'],
+              display: ['Oswald', 'sans-serif']
             }
+          }
         }
+      }
     </script>
-    <!-- FontAwesome & Google Fonts -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        .corkboard-bg {
-            background-color: #cb9b61;
-            background-image: 
-                radial-gradient(#a37238 12%, transparent 13%),
-                radial-gradient(#875723 12%, transparent 13%);
-            background-size: 24px 24px;
-            background-position: 0 0, 12px 12px;
-            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.6);
-        }
+      :root {
+        --bg: #050b14;
+        --panel: #0d1723;
+        --panel-strong: #112233;
+        --line: rgba(148, 163, 184, 0.18);
+        --cyan: #00a8ff;
+        --cyan-light: #18d3ff;
+        --text: #edf4ff;
+        --muted: #b7c6d9;
+      }
 
-        .polaroid {
-            background: #ffffff;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35), 0 2px 5px rgba(0, 0, 0, 0.2);
-            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s ease;
-        }
+      html {
+        background: var(--bg);
+      }
 
-        .polaroid:hover {
-            transform: scale(1.05) rotate(0deg) !important;
-            z-index: 30;
-            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5);
-        }
+      body {
+        background:
+          radial-gradient(circle at top, rgba(41, 85, 124, 0.18), transparent 28%),
+          linear-gradient(180deg, #040a12 0%, #050b14 35%, #050b14 100%);
+        color: var(--text);
+      }
 
-        .pushpin {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            position: absolute;
-            top: 3px;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 2px 3px 5px rgba(0,0,0,0.4);
-            z-index: 10;
-        }
+      .panel {
+        background: linear-gradient(180deg, rgba(13, 23, 35, 0.96), rgba(10, 18, 27, 0.96));
+        border: 1px solid var(--line);
+        box-shadow: 0 16px 42px rgba(0, 0, 0, 0.22);
+      }
 
-        .pushpin::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.8);
-        }
+      .nav-pill {
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+      }
 
-        @media (min-width: 640px) {
-            .pushpin { width: 16px; height: 16px; top: 4px; }
-            .pushpin::after { top: 3px; left: 3px; width: 5px; height: 5px; }
-        }
+      .nav-pill:hover,
+      .nav-pill.active {
+        border-color: rgba(0, 168, 255, 0.38);
+        background: rgba(15, 23, 42, 0.8);
+        color: #ffffff;
+      }
 
-        @keyframes plateSlideOn {
-            from { transform: translateX(var(--dx)); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        .plate-new { animation: plateSlideOn 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+      .hero-illustration {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0.15;
+        pointer-events: none;
+      }
 
-        .writing-mode-vertical {
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
-        }
+      .album-card {
+        background: linear-gradient(180deg, rgba(17, 24, 39, 0.92), rgba(15, 23, 42, 0.9));
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        transition: transform 0.18s ease, border-color 0.18s ease;
+      }
 
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #080a0f;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1a2234;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #00a8ff;
-        }
+      .album-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(0, 168, 255, 0.4);
+      }
+
+      .album-thumb {
+        background: linear-gradient(135deg, rgba(0, 168, 255, 0.15), rgba(148, 163, 184, 0.08));
+      }
+
+      .brand-mark {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        background: linear-gradient(135deg, #00a8ff, #006da8);
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
+        transform: skew(-10deg);
+      }
+
+      .brand-mark::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        display: block;
+        border-left: 3px solid white;
+        border-bottom: 3px solid white;
+        transform: rotate(45deg) translate(-1px, -1px);
+      }
+
+      .skeleton {
+        background: linear-gradient(90deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.8));
+        background-size: 200% 100%;
+        animation: shimmer 1.4s infinite linear;
+      }
+
+      @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
     </style>
-</head>
-<body class="bg-brandDark text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-brandCyan selection:text-black">
+  </head>
 
-    <!-- HEADER NAVIGATION -->
-    <header class="sticky top-0 z-40 bg-brandDark/95 backdrop-blur-md border-b border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            
-            <!-- Brand Logo -->
-            <div class="flex items-center space-x-2 sm:space-x-3 cursor-pointer" onclick="switchTab('home')">
-                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOwAAAC0CAIAAAAYbFfZAABj9klEQVR42u19d7hdVbX9HHOuvfcpt6Z3QgsJIYWEjvRe9P18Yu9dUVEQGyiWhwUVG0+xK/aCT5GOBaTXdEKAUEJ6v/2cs/dac/7+2OeG[...]
-                <div>
-                    <span class="text-base sm:text-2xl font-heading font-black tracking-wider text-white block leading-none">CROSSFIT <span class="text-brandCyan">CAINTA</span></span>
-                    <span class="text-[10px] text-slate-400 font-bold tracking-widest uppercase bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700/60 inline-block mt-1">EAST ORTIGAS</span>
-                </div>
-            </div>
-
-            <!-- Navigation Links -->
-            <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
-                <button onclick="switchTab('home')" id="nav-home" class="px-4 py-2 rounded-xl text-sm font-semibold transition text-brandCyan bg-slate-800/80">
-                    <i class="fa-solid fa-house mr-1.5"></i> Home
-                </button>
-                <button onclick="switchTab('membersboard')" id="nav-membersboard" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-note-sticky mr-1.5"></i> Members Board
-                </button>
-                <button onclick="switchTab('schedule')" id="nav-schedule" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-calendar-days mr-1.5"></i> Schedule
-                </button>
-                <button onclick="switchTab('formcheck')" id="nav-formcheck" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-video mr-1.5"></i> Form Check
-                </button>
-                <button onclick="switchTab('timer')" id="nav-timer" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition"><i class="fa-solid fa-dumbbell mr-1.5"></i> Tracker</button>
-                <button onclick="switchTab('prs')" id="nav-prs" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition"><i class="fa-solid fa-trophy mr-1.5"></i> PRs</button>
-                <button onclick="switchTab('events')" id="nav-events" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition"><i class="fa-solid fa-calendar-star mr-1.5"></i> Events</button>
-                <button onclick="switchTab('admin')" id="nav-admin" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition relative">
-                    <i class="fa-solid fa-user-gear mr-1.5"></i> Admin
-                    <span id="pendingBadge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center">0</span>
-                </button>
-            </nav>
-
-            <input type="file" id="avatarFileInput" accept="image/*" class="hidden" onchange="uploadAvatar(this.files[0]); this.value='';">
-            <!-- Logged-in profile -->
-            <div class="flex items-center gap-3">
-                <button onclick="installApp()" title="Install the app on your phone" class="install-btn hidden md:flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 hover:border-brandCyan/60 transition">
-                    <i class="fa-solid fa-download text-brandCyan"></i> Install App
-                </button>
-                <div class="relative">
-                    <button id="profileBtn" onclick="toggleProfileMenu(event)" aria-haspopup="true" class="flex items-center gap-3 text-left">
-                        <img id="profileAvatar" alt="" onerror="avatarFallback(this)" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-brandCyan shadow-lg shadow-brandCyan/10">
-                        <span class="leading-tight block">
-                            <span id="profileName" class="block text-sm font-bold text-white max-w-[90px] sm:max-w-[150px] truncate"></span>
-                        </span>
-                    </button>
-                    <div id="profileMenu" class="hidden absolute right-0 top-full mt-3 w-64 bg-brandCard border border-slate-700 rounded-2xl shadow-2xl shadow-black/60 overflow-hidden z-50"></div>
-                </div>
-            </div>
+  <body class="min-h-screen text-slate-100">
+    <header class="sticky top-0 z-40 border-b border-slate-800/80 bg-[#050b14]/90 backdrop-blur-md">
+      <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-3" role="button" tabindex="0" aria-label="Go home">
+          <div class="flex items-center">
+            <div class="brand-mark"></div>
+            <span class="ml-2 text-lg font-black uppercase tracking-[0.16em] text-white sm:text-2xl">
+              CrossFit <span class="text-brandCyan">Cainta</span>
+            </span>
+          </div>
+          <span class="hidden rounded border border-slate-700 bg-slate-800/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 sm:inline-block">
+            East Ortigas
+          </span>
         </div>
+
+        <nav class="hidden items-center gap-2 md:flex">
+          <button class="nav-pill active rounded-xl px-4 py-2 text-sm font-semibold text-brandCyan" type="button">
+            <i class="fa-solid fa-house mr-2"></i>Home
+          </button>
+          <button class="nav-pill rounded-xl px-4 py-2 text-sm font-semibold text-slate-300" type="button">
+            <i class="fa-solid fa-note-sticky mr-2"></i>Members Board
+          </button>
+          <button class="nav-pill rounded-xl px-4 py-2 text-sm font-semibold text-slate-300" type="button">
+            <i class="fa-solid fa-calendar-days mr-2"></i>Schedule
+          </button>
+          <button class="nav-pill rounded-xl px-4 py-2 text-sm font-semibold text-slate-300" type="button">
+            <i class="fa-solid fa-video mr-2"></i>Form Check
+          </button>
+          <button class="nav-pill rounded-xl px-4 py-2 text-sm font-semibold text-slate-300" type="button">
+            <i class="fa-solid fa-stopwatch mr-2"></i>Timer
+          </button>
+          <button class="nav-pill rounded-xl px-4 py-2 text-sm font-semibold text-slate-300" type="button">
+            <i class="fa-solid fa-dumbbell mr-2"></i>PRs
+          </button>
+          <button class="nav-pill rounded-xl px-4 py-2 text-sm font-semibold text-slate-300" type="button">
+            <i class="fa-solid fa-calendar-check mr-2"></i>Events
+          </button>
+          <button class="nav-pill rounded-xl px-4 py-2 text-sm font-semibold text-slate-300" type="button">
+            <i class="fa-solid fa-user-gear mr-2"></i>Admin
+          </button>
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <button class="hidden items-center gap-2 rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm font-semibold text-slate-200 md:flex" type="button">
+            <i class="fa-solid fa-download text-brandCyan"></i>
+            Install App
+          </button>
+          <div class="flex items-center gap-3 rounded-full border border-slate-700 bg-slate-900/80 px-2 py-1.5">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-brandCyan to-sky-700 text-sm font-bold text-white shadow-md shadow-sky-900/40">
+              CF
+            </div>
+            <div class="hidden text-left sm:block">
+              <div class="text-sm font-bold text-white">Cainta Crew</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </header>
 
-    <!-- MAIN APP CONTENT -->
-    <button id="photoPrompt" onclick="openProfileModal()" class="hidden w-full bg-brandCyan/10 border-b border-brandCyan/30 text-brandCyan text-xs font-extrabold px-4 py-2 text-center"><i class="fa-solid fa-camera mr-2"></i> Add a profile photo</button>
-    <div id="accountNotice" class="hidden bg-amber-500/10 border-b border-amber-500/30 text-amber-300 text-xs font-semibold px-4 py-2 text-center"></div>
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-28 md:pb-8 flex-grow w-full">
-
-        <!-- PAGE 1: HOME ("WHAT IS CROSSFIT" + BARBELL CALCULATOR) -->
-        <section id="tab-home" class="space-y-10">
-            <div id="homeAnnouncements"></div>
-            
-            <div class="relative bg-gradient-to-r from-slate-900 via-brandCard to-slate-900 border border-slate-800 rounded-3xl p-8 sm:p-12 overflow-hidden">
-                <div class="absolute -right-10 -bottom-10 opacity-10 text-brandCyan pointer-events-none">
-                    <i class="fa-solid fa-dumbbell text-[260px]"></i>
-                </div>
-                <div class="max-w-3xl space-y-4 relative z-10">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brandCyan/10 border border-brandCyan/30 text-brandCyan text-xs font-bold uppercase tracking-wider">
-                        <i class="fa-solid fa-bolt"></i> East Ortigas Headquarters
-                    </div>
-                    <h1 class="text-3xl sm:text-5xl font-heading font-black tracking-wide uppercase text-white leading-none">
-                        What is <span class="text-brandCyan">CrossFit</span>?
-                    </h1>
-                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-                        CrossFit is a principal strength and conditioning program designed for constant variation, high-intensity functional movements. At CrossFit Cainta East Ortigas, under Head Coach Jason Truman, we help athletes build strength, stamina and confidence in a welcoming, disciplined environment.
-                    </p>
-                    <div class="pt-2 flex flex-wrap gap-4">
-                        <button onclick="switchTab('schedule')" class="px-6 py-3 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-sm transition shadow-lg shadow-brandCyan/20">
-                            <i class="fa-solid fa-calendar-check"></i> View Class Schedule
-                        </button>
-                        <button onclick="openRegisterModal()" class="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-extrabold text-sm transition flex items-center gap-2">
-                            <i class="fa-solid fa-user-plus"></i> Join Roster
-                        </button>
-                        <button onclick="installApp()" class="install-btn px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-brandCyan/40 font-extrabold text-sm transition flex items-center gap-2">
-                            <i class="fa-solid fa-download text-brandCyan"></i> Install App
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="homeWod"></div>
-            <div id="homeEvents"></div>
-            <div id="homeMembership" class="space-y-4"></div>
-            <div id="homeContact"></div>
-        </section>
-
-        <!-- PAGE 2: MEMBERS BOARD (WOODEN CORKBOARD) -->
-        <section id="tab-membersboard" class="hidden space-y-6">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-brandCard p-6 rounded-3xl border border-slate-800">
-                <div>
-                    <h1 class="text-2xl sm:text-3xl font-heading font-bold text-white flex items-center gap-3">
-                        <i class="fa-solid fa-note-sticky text-brandCyan"></i> Community Corkboard
-                    </h1>
-                    <p class="text-slate-400 text-xs sm:text-sm mt-1">Official pinned roster for CrossFit Cainta East Ortigas.</p>
-                    <button id="corkDecorBtn" onclick="startCorkDecor()" class="hidden mt-3 px-4 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/40 text-xs font-bold uppercase tracking-wider">Decorate my corkboard</button>
-                </div>
-                <button onclick="openRegisterModal()" class="px-5 py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs uppercase tracking-wider transition shadow-lg shadow-brandCyan/20">
-                    <i class="fa-solid fa-user-plus"></i> Submit Profile
-                </button>
-            </div>
-
-            <!-- CORKBOARD FRAME -->
-            <div class="corkboard-bg rounded-3xl p-2.5 sm:p-10 border-[8px] sm:border-[12px] border-amber-950 shadow-2xl relative min-h-[620px] overflow-hidden" style="container-type:inline-size">
-                <div id="boardSelfNote" class="hidden mb-4 p-3 rounded-xl bg-amber-950/80 border border-amber-700 text-amber-200 text-xs font-semibold"></div>
-                <div class="space-y-8">
-                    <!-- SECTION: COACHES -->
-                    <div class="space-y-4">
-                        <div class="inline-block bg-amber-950/80 border border-amber-800/80 text-amber-200 px-4 py-1.5 rounded-xl shadow">
-                            <h2 class="font-heading font-bold uppercase tracking-wider text-sm flex items-center gap-2">
-                                <i class="fa-solid fa-crown text-yellow-400"></i> Coaches
-                            </h2>
-                        </div>
-                        <div id="boardCoaches" class="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-6"></div>
-                    </div>
-
-                    <!-- SECTION: MEMBERS -->
-                    <div class="space-y-4 pt-4 border-t border-amber-900/40">
-                        <div class="inline-block bg-amber-950/80 border border-amber-800/80 text-amber-200 px-4 py-1.5 rounded-xl shadow">
-                            <h2 class="font-heading font-bold uppercase tracking-wider text-sm flex items-center gap-2">
-                                <i class="fa-solid fa-users text-brandCyan"></i> Members
-                            </h2>
-                        </div>
-                        <div id="boardMembers" class="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-6"></div>
-                    </div>
-                </div>
-                <div id="corkLayer" class="absolute inset-0 z-20 pointer-events-none"></div>
-            </div>
-            <div id="boardCoachBios" class="bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-3"></div>
-        </section>
-
-        <!-- PAGE 3: SPLIT-SCREEN INTERACTIVE SCHEDULE -->
-        <section id="tab-schedule" class="hidden space-y-6">
-            <div class="bg-brandCard p-6 rounded-3xl border border-slate-800">
-                <h1 class="text-2xl sm:text-3xl font-heading font-bold text-white flex items-center gap-3">
-                    <i class="fa-solid fa-calendar-days text-brandCyan"></i> Class Calendar & Booking
-                </h1>
-                <p class="text-slate-400 text-xs sm:text-sm mt-1">Select any date on the calendar to view and reserve class slots.</p>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div class="lg:col-span-7 bg-brandCard p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-5">
-                    <div class="flex items-center justify-between">
-                        <span id="calendarMonthYear" class="font-heading font-bold text-2xl sm:text-3xl text-white">October 2026</span>
-                        <div class="flex gap-2">
-                            <button onclick="prevMonth()" class="w-10 h-10 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 text-sm flex items-center justify-center"><i class="fa-solid fa-chevron-left"></i></button>
-                            <button onclick="nextMonth()" class="w-10 h-10 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 text-sm flex items-center justify-center"><i class="fa-solid fa-chevron-right"></i></button>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-7 text-center text-xs sm:text-sm font-bold text-slate-500 uppercase">
-                        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-                    </div>
-
-                    <div id="calendarGrid" class="grid grid-cols-7 gap-2"></div>
-                </div>
-
-                <div class="lg:col-span-5 bg-brandCard p-6 rounded-3xl border border-slate-800 flex flex-col justify-between">
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-                            <div>
-                                <span class="text-xs text-brandCyan font-bold uppercase tracking-widest block">Selected Date</span>
-                                <h3 id="selectedDateTitle" class="text-2xl font-heading font-bold text-white mt-0.5">Monday, Oct 26</h3>
-                            </div>
-                            <span id="dayBadge" class="px-3 py-1 rounded-full bg-slate-800 text-xs font-bold text-slate-300 border border-slate-700">CrossFit Day</span>
-                        </div>
-
-                        <div id="classSlotsContainer" class="space-y-3"></div>
-                    </div>
-
-                    <div class="mt-6 pt-4 border-t border-slate-800/80 text-xs text-slate-400 flex items-center justify-between">
-                        <span><i class="fa-solid fa-circle-info text-brandCyan mr-1"></i> Class capacity strictly capped at 15 athletes.</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- PAGE 4: FORM CHECK (MEMBER VIDEOS + MANUAL COACH NOTES) -->
-        <section id="tab-formcheck" class="hidden space-y-6">
-            <div class="bg-brandCard p-6 rounded-3xl border border-slate-800">
-                <h1 class="text-2xl sm:text-3xl font-heading font-bold text-white flex items-center gap-3">
-                    <i class="fa-solid fa-video text-brandCyan"></i> Lift Form Check
-                </h1>
-                <p class="text-slate-400 text-xs sm:text-sm mt-1">Members upload their lift videos. Coaches review each video and write their notes by hand.</p>
-            </div>
-
-            <!-- Upload -->
-            <div class="bg-brandCard p-6 rounded-3xl border border-slate-800 space-y-5">
-                <div id="formGuestNotice" class="hidden p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold">
-                    Guests can't submit videos. Log in with your member account to upload.
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Your Name</label>
-                            <input type="text" id="formMemberName" placeholder="Your full name" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
-                        </div>
-                        <button id="formSubmitBtn" onclick="submitFormVideos()" disabled class="w-full py-3 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-sm transition">
-                            Submit Videos
-                        </button>
-                    </div>
-
-                    <div class="lg:col-span-2">
-                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Videos (you can pick several)</label>
-                        <div onclick="document.getElementById('formVideoInput').click()"
-                             ondragover="event.preventDefault()"
-                             ondrop="event.preventDefault(); addFormFiles(event.dataTransfer.files)"
-                             class="border-2 border-dashed border-slate-700 hover:border-brandCyan rounded-2xl p-6 text-center cursor-pointer bg-slate-900/40 transition">
-                            <i class="fa-solid fa-cloud-arrow-up text-3xl text-brandCyan mb-2"></i>
-                            <div class="text-sm font-bold text-white">Click or drag videos here</div>
-                            <div class="text-xs text-slate-500 mt-1">MP4, MOV or WEBM, up to 50 MB each. Tip: record in 1080p and keep each clip under about a minute.</div>
-                            <input type="file" id="formVideoInput" accept="video/*" multiple class="hidden" onchange="addFormFiles(this.files); this.value='';">
-                        </div>
-                    </div>
-                </div>
-
-                <div id="formStagedList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
-            </div>
-
-            <!-- Submitted videos -->
-            <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h2 id="formGridTitle" class="font-heading font-bold text-xl text-white">My Videos</h2>
-                        <p id="formPrivacyNote" class="text-[11px] text-slate-500 mt-0.5"></p>
-                    </div>
-                    <div class="flex items-center gap-2"><button onclick="renderFormChecks()" class="text-xs px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-brandCyan font-bold transition">Refresh</button></div>
-                </div>
-                <div id="formSubmissionsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
-            </div>
-        </section>
-
-        <!-- PAGE: TIMER -->
-        <section id="tab-timer" class="hidden space-y-6">
-            <div class="bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-3"><h1 class="text-2xl sm:text-3xl font-heading font-bold text-white flex items-center gap-3"><i class="fa-solid fa-stopwatch text-brandCyan"></i> Workout Timer & Strength Tools</h1>
-                <div class="flex gap-2"><button id="toolBtnTimer" onclick="toolSwitch('timer')" class="px-4 py-2 rounded-xl text-xs font-extrabold border border-brandCyan/40 bg-brandCyan/10 text-brandCyan"><i class="fa-solid fa-stopwatch"></i> WOD Timer</button><button id="toolBtnBarbell" onclick="toolSwitch('barbell')" class="px-4 py-2 rounded-xl text-xs font-extrabold border border-slate-700 bg-slate-900 text-slate-300"><i class="fa-solid fa-dumbbell"></i> Barbell Calculator</button></div>
-            </div>
-            <div id="toolTimer">
-                <div class="bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-5 text-center">
-                    <div class="flex flex-wrap justify-center gap-2" id="tmModes"></div>
-                    <div class="flex items-center justify-center gap-2"><label id="tmMinLabel" class="text-xs font-bold text-slate-300 uppercase tracking-wider">Minutes</label><input id="tmMin" type="number" min="0" max="99" value="12" class="w-20 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-center"></div>
-                    <div id="tmLabel" class="text-sm font-heading font-bold tracking-[0.3em] text-slate-400">READY</div>
-                    <div id="tmClock" class="font-heading font-black text-white leading-none text-[5.5rem] sm:text-[9rem] tabular-nums">12:00</div>
-                    <div class="flex justify-center gap-3"><button id="tmBtn" onclick="tmToggle()" class="px-4 py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs transition">Start</button><button onclick="tmReset()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-extrabold text-xs transition">Reset</button></div>
-                    <p id="tmHelp" class="text-[11px] text-slate-500"></p>
-                </div>
-            </div>
-            <div id="toolBarbell" class="hidden">
-                <!-- Olympic Barbell Plate Calculator -->
-                <div class="bg-brandCard border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
-                        <div>
-                            <h2 class="text-2xl font-heading font-bold text-white flex items-center gap-3">
-                                <i class="fa-solid fa-dumbbell text-brandCyan"></i> Olympic Barbell Calculator
-                            </h2>
-                            <p class="text-slate-400 text-xs sm:text-sm mt-1">Calculate bumper plates loaded on each sleeve with standard Olympic weight colors.</p>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <div class="flex rounded-lg overflow-hidden border border-slate-700">
-                                <button id="unitLb" onclick="setUnit('lb')" class="px-3 py-1.5 text-xs font-extrabold bg-brandCyan text-slate-950">LB</button>
-                                <button id="unitKg" onclick="setUnit('kg')" class="px-3 py-1.5 text-xs font-extrabold bg-slate-900 text-slate-300 hover:bg-slate-800">KG</button>
-                            </div>
-                            <div id="presetButtons" class="flex items-center gap-2"></div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div class="space-y-5 bg-slate-900/60 p-5 rounded-2xl border border-slate-800/80">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Total Target Weight</label>
-                                <div class="relative">
-                                    <input type="number" id="calcTarget" value="135" min="15" step="2.5" oninput="calculateBarbell()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-brandCyan">
-                                    <span id="unitLabel" class="absolute right-4 top-3.5 text-xs font-bold text-slate-500">LB</span>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Barbell Weight</label>
-                                <select id="calcBar" onchange="calculateBarbell()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm font-semibold text-white focus:outline-none focus:border-brandCyan">
-                                    <option value="45">45 lb</option>
-                                    <option value="20">20 kg</option>
-                                </select>
-                            </div>
-
-                            <div class="pt-2 border-t border-slate-800">
-                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Plate Color Guide</span>
-                                <div id="paletteLegend" class="grid grid-cols-2 gap-2 text-[11px] font-medium text-slate-300"></div>
-                            </div>
-                        </div>
-
-                        <div class="lg:col-span-2 flex flex-col justify-between bg-slate-950 p-6 rounded-2xl border border-slate-800/80 min-h-[300px]">
-                            <div class="text-center">
-                                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Weight Per Side</span>
-                                <div id="sideWeightText" class="text-3xl sm:text-4xl font-heading font-black text-brandCyan mt-1">45 LBS</div>
-                            </div>
-
-                            <div class="w-full py-4">
-                                <svg id="barbellSvg" viewBox="0 0 1000 226" class="w-full h-auto" role="img" aria-label="Olympic barbell with plates"></svg>
-                            </div>
-
-                            <div id="plateSummary" class="text-center text-xs font-semibold text-slate-300 bg-slate-900/80 p-3 rounded-xl border border-slate-800">
-                                Loading barbell configuration...
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- PAGE: PRs -->
-        <section id="tab-prs" class="hidden space-y-6">
-            <div class="bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6"><h1 class="text-2xl sm:text-3xl font-heading font-bold text-white flex items-center gap-3"><i class="fa-solid fa-trophy text-brandCyan"></i> Personal Records</h1></div>
-            <div id="prGuest" class="hidden p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold">Log in with an approved account to track your PRs.</div>
-            <div id="prBody" class="space-y-6">
-                <div class="bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6 grid grid-cols-2 lg:grid-cols-6 gap-3 items-end">
-                    <div class="col-span-2"><label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">Movement</label><select id="prMove" onchange="prMoveChanged()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white"><option value="back_squat">Back Squat</option><option value="bench_press">Bench Press</option><option value="deadlift">Deadlift</option><option value="clean_and_jerk">Clean & Jerk</option><option value="snatch">Snatch</option><option value="overhead_press">Overhead Press</option></select></div>
-                    <div><label id="prValLabel" class="block text-[11px] font-bold text-slate-300 uppercase mb-1">Weight</label><div class="flex gap-1"><input id="prValue" type="text" inputmode="decimal" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white" placeholder="135"></div></div>
-                    <div><label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">Date</label><input id="prDate" type="date" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white"></div>
-                    <div><label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">Note</label><input id="prNote" type="text" maxlength="80" placeholder="optional" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white"></div>
-                    <button onclick="savePr()" class="px-4 py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs transition !py-3">Save PR</button>
-                </div>
-                <div id="prList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                <div class="bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-3">
-                    <div class="flex flex-wrap items-center justify-between gap-3"><h2 class="font-heading font-bold text-xl text-white">Gym Leaderboard</h2><select id="lbMove" onchange="loadLeaderboard()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white"><option value="back_squat">Back Squat</option><option value="bench_press">Bench Press</option><option value="deadlift">Deadlift</option><option value="clean_and_jerk">Clean & Jerk</option><option value="snatch">Snatch</option><option value="overhead_press">Overhead Press</option></select></div>
-                    <label class="flex items-start gap-2 text-xs text-slate-300"><input type="checkbox" id="lbOpt" onchange="setLbConsent(this.checked)" class="mt-0.5 accent-sky-500"><span>Show my name on the leaderboard.</span></label>
-                    <div id="lbList" class="space-y-1.5"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- PAGE: EVENTS / COMPS -->
-        <section id="tab-events" class="hidden space-y-6">
-            <div class="bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6 flex flex-wrap items-center justify-between gap-3">
-                <div>
-                    <h1 class="text-2xl sm:text-3xl font-heading font-bold text-white flex items-center gap-3">
-                        <i class="fa-solid fa-trophy text-brandCyan"></i> Events &amp; Comps
-                    </h1>
-                    <p class="text-slate-400 text-xs sm:text-sm mt-1">Upcoming events, community comps, and photo albums.</p>
-                </div>
-                <button id="evAddBtn" onclick="openEventForm()" class="hidden px-4 py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs transition">+ Add Event</button>
-            </div>
-
-            <div id="eventsBody" class="space-y-6"></div>
-
-            <div class="rounded-3xl border border-slate-800 bg-slate-900/70 p-6 shadow-2xl shadow-black/30">
-                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <p class="text-xs font-bold uppercase tracking-[0.25em] text-brandCyan">Gallery</p>
-                        <h2 class="mt-2 text-3xl font-heading font-black uppercase text-white">Event Albums</h2>
-                    </div>
-                    <button id="eventsOpenAlbumModal" class="inline-flex items-center justify-center rounded-xl bg-brandCyan px-4 py-2.5 text-sm font-bold text-black transition hover:bg-brandCyanBright">
-                        <i class="fa-solid fa-plus mr-2"></i> Add Album
-                    </button>
-                </div>
-            </div>
-
-            <div id="eventsAlbumGrid" class="grid gap-6 md:grid-cols-2 xl:grid-cols-3"></div>
-
-            <div id="eventsAlbumDetail" class="hidden rounded-3xl border border-slate-800 bg-slate-900/70 p-6 shadow-2xl shadow-black/30">
-                <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <button id="eventsBackToAlbums" class="inline-flex items-center rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-200">
-                        <i class="fa-solid fa-arrow-left mr-2"></i> Back
-                    </button>
-                    <div class="flex items-center gap-3">
-                        <h3 id="eventsDetailTitle" class="text-2xl font-heading font-black uppercase text-white"></h3>
-                        <button id="eventsDeleteAlbumBtn" class="rounded-xl bg-red-600 px-3 py-2 text-sm font-bold text-white hover:bg-red-500">
-                            Delete Album
-                        </button>
-                    </div>
-                </div>
-
-                <div class="mb-5">
-                    <label for="eventsMediaInput" class="mb-2 block text-sm font-semibold text-slate-200">Add photos or videos</label>
-                    <input id="eventsMediaInput" type="file" accept="image/*,video/*" multiple class="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-slate-200">
-                </div>
-
-                <div id="eventsMediaGrid" class="grid gap-5 md:grid-cols-2 xl:grid-cols-3"></div>
-            </div>
-        </section>
-
-        <div id="eventsAlbumModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 p-4">
-            <div class="w-full max-w-lg rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-2xl shadow-black/60">
-                <div class="mb-4 flex items-center justify-between">
-                    <h3 class="text-2xl font-heading font-black uppercase text-white">Create Album</h3>
-                    <button id="eventsCloseAlbumModal" class="text-xl text-slate-400 hover:text-white">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-
-                <div class="space-y-4">
-                    <div>
-                        <label for="eventsAlbumTitle" class="mb-2 block text-sm font-semibold text-slate-200">Title</label>
-                        <input id="eventsAlbumTitle" type="text" placeholder="e.g. Team Training 2025" class="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-slate-200 placeholder:text-slate-500">
-                    </div>
-
-                    <div>
-                        <label for="eventsAlbumCover" class="mb-2 block text-sm font-semibold text-slate-200">Cover Photo</label>
-                        <input id="eventsAlbumCover" type="file" accept="image/*" class="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-slate-200">
-                    </div>
-
-                    <div class="flex justify-end gap-3 pt-2">
-                        <button id="eventsCancelAlbum" class="rounded-xl border border-slate-600 bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-200">Cancel</button>
-                        <button id="eventsSaveAlbumBtn" class="rounded-xl bg-brandCyan px-4 py-2 text-sm font-bold text-black">Create Album</button>
-                    </div>
-                </div>
-            </div>
+    <main class="mx-auto max-w-7xl px-4 pb-16 pt-10 sm:px-6 lg:px-8">
+      <section class="panel relative overflow-hidden rounded-[28px] px-5 py-8 sm:px-8 sm:py-10 lg:px-12">
+        <div class="hero-illustration hidden lg:block">
+          <div class="flex h-[260px] w-[300px] items-center justify-center text-sky-400/30">
+            <i class="fa-solid fa-dumbbell text-[220px]"></i>
+          </div>
         </div>
 
-        <!-- PAGE 5: ADMIN & HEAD COACH APPROVAL QUEUE -->
-        <section id="tab-admin" class="hidden space-y-6">
-            <div class="bg-brandCard p-6 rounded-3xl border border-slate-800">
-                <h1 class="text-2xl sm:text-3xl font-heading font-bold text-white flex items-center gap-3">
-                    <i class="fa-solid fa-user-gear text-brandCyan"></i> Head Coach Administration
-                </h1>
-                <p class="text-slate-400 text-xs sm:text-sm mt-1">Review pending account applications and manage corkboard roster permissions.</p>
-            </div>
+        <div class="relative z-10 max-w-3xl">
+          <div class="mb-5 inline-flex items-center gap-2 rounded-full border border-brandCyan/30 bg-brandCyan/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-brandCyan">
+            <i class="fa-solid fa-bolt"></i>
+            East Ortigas Headquarters
+          </div>
 
-            <div id="adminContent" class="space-y-6"></div>
-        </section>
+          <h1 class="text-4xl font-black uppercase leading-none tracking-wide text-white sm:text-5xl">
+            What is <span class="text-brandCyan">CrossFit</span>?
+          </h1>
 
+          <p class="mt-5 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
+            CrossFit is a principal strength and conditioning program designed for constant variation,
+            high-intensity functional movements. At CrossFit Cainta East Ortigas, under Head Coach Jason Truman,
+            we help athletes build strength, stamina and confidence in a welcoming, disciplined environment.
+          </p>
+
+          <div class="mt-8 flex flex-wrap gap-3">
+            <button class="rounded-xl bg-brandCyan px-5 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-cyan-900/30 transition hover:bg-brandCyanBright" type="button">
+              <i class="fa-solid fa-calendar-week mr-2"></i>View Class Schedule
+            </button>
+            <button class="rounded-xl border border-slate-700 bg-slate-900/80 px-5 py-3 text-sm font-bold text-white transition hover:border-slate-600 hover:bg-slate-800" type="button">
+              <i class="fa-solid fa-user-plus mr-2"></i>Join Roster
+            </button>
+            <button class="rounded-xl border border-slate-700 bg-slate-900/80 px-5 py-3 text-sm font-bold text-white transition hover:border-slate-600 hover:bg-slate-800" type="button">
+              <i class="fa-solid fa-download mr-2"></i>Install App
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="mt-10">
+        <div class="panel rounded-3xl p-5 sm:p-6 lg:p-7">
+          <div class="mb-4 flex items-center justify-between gap-4">
+            <h2 class="text-2xl font-black uppercase tracking-wider text-white">Albums</h2>
+            <button class="rounded-xl border border-slate-700 bg-slate-900/70 px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-300" type="button">
+              + Add Album
+            </button>
+          </div>
+
+          <div id="albumsContainer" class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3"></div>
+        </div>
+      </section>
     </main>
 
-    <!-- FOOTER -->
-    <footer class="bg-brandDark border-t border-slate-800 py-6">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-500 space-y-2">
-            <p>CrossFit Cainta East Ortigas • Sole Head Coach: <strong>Jason Truman</strong></p>
-            <p>© 2026 CrossFit Cainta. All rights reserved.</p>
-        </div>
+    <footer class="border-t border-slate-800/80 bg-[#060d16]">
+      <div class="mx-auto max-w-7xl px-4 py-8 text-center text-sm text-slate-400">
+        <div class="mb-1 font-semibold uppercase tracking-[0.22em] text-slate-200">CrossFit Cainta East Ortigas</div>
+        <div>© 2026 CrossFit Cainta. All rights reserved.</div>
+      </div>
     </footer>
 
-    <!-- MODAL: REGISTER / JOIN ROSTER FORM -->
-    <div id="loginOverlay" class="fixed inset-0 bg-brandDark/95 backdrop-blur-md z-[60] hidden flex items-center justify-center p-4 overflow-y-auto">
-        <div class="w-full max-w-md bg-brandCard border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-5 my-auto">
-            <div class="text-center space-y-1">
-                <div class="font-heading font-bold text-2xl text-white tracking-wider">CROSSFIT <span class="text-brandCyan">CAINTA</span></div>
-                <p class="text-xs text-slate-400">Log in to your account</p>
-            </div>
-            <form onsubmit="handleLoginSubmit(event)" class="space-y-3">
-                <input type="email" id="loginEmail" required autocomplete="email" placeholder="Email" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
-                <input type="password" id="loginPassword" required autocomplete="current-password" placeholder="Password" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
-                <p id="loginError" class="text-xs text-red-400 min-h-[1rem]"></p>
-                <button id="loginSubmit" type="submit" class="w-full py-3 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-sm transition shadow-lg shadow-brandCyan/20">Log in</button>
-                <button type="button" onclick="forgotPassword()" class="w-full text-[11px] text-slate-400 hover:text-brandCyan transition">Forgot password?</button>
-            </form>
-            <div class="flex flex-col sm:flex-row gap-2 pt-3 border-t border-slate-800">
-                <button onclick="continueAsGuest()" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold text-xs transition">Continue as Guest</button>
-                <button onclick="openRegisterModal()" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-brandCyan border border-brandCyan/40 font-extrabold text-xs transition">Create account</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="registerModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[70] hidden flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-brandCard border border-slate-800 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative my-auto">
-            <button onclick="closeRegisterModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-
-            <h2 class="text-2xl font-heading font-bold text-white mb-1">Create Account</h2>
-            <p class="text-xs text-slate-400 mb-6">Apply to join the CrossFit Cainta East Ortigas community. A coach approves every account.</p>
-
-            <form onsubmit="handleRegisterSubmit(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Full Name</label>
-                    <input type="text" id="regFullName" required placeholder="e.g. Maria Santos" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Email Address</label>
-                    <input type="email" id="regEmail" required autocomplete="email" placeholder="maria@email.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Password</label>
-                    <input type="password" id="regPassword" required minlength="8" autocomplete="new-password" placeholder="At least 8 characters" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Bio / Tagline <span class="text-slate-500 normal-case font-medium">(optional)</span></label>
-                    <input type="text" id="regBio" placeholder="e.g. Morning WOD Enthusiast" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
-                </div>
-                <div><label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Profile photo (optional)</label><input type="file" id="regPhoto" accept="image/*" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-200"></div>
-                <label class="flex items-start gap-2 text-[11px] text-slate-300 leading-relaxed"><input type="checkbox" id="regBoardOk" class="mt-0.5 accent-sky-500"><span>Optional: allow the Head Coach to show you on the public Members Board.</span></label>
-                <p class="text-[11px] text-slate-500 leading-relaxed">By applying you agree that the gym stores your name, email, profile photo and any form check videos you upload, so coaches can run the program and support members.</p>
-                <p id="regError" class="text-xs text-red-400 min-h-[1rem]"></p>
-                <button id="regSubmit" type="submit" class="w-full py-3 bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold rounded-xl transition shadow-lg shadow-brandCyan/20 text-sm">Apply</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="profileModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[80] hidden overflow-y-auto p-3 sm:p-6" onclick="if(event.target===this) closeProfileModal()">
-        <div class="w-full max-w-md mx-auto my-2 bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-5">
-            <div class="flex items-center justify-between"><h3 class="font-heading font-bold text-2xl text-white">Profile</h3><button onclick="closeProfileModal()" class="w-9 h-9 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300">&times;</button></div>
-            <div class="flex items-center gap-4">
-                <img id="profModalPhoto" alt="" onclick="document.getElementById('avatarFileInput').click()" onerror="avatarFallback(this)" class="w-20 h-20 rounded-full object-cover border-2 border-brandCyan shadow-lg shadow-brandCyan/10">
-                <div class="space-y-1"><button onclick="document.getElementById('avatarFileInput').click()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs font-bold">Change photo</button></div>
-            </div>
-            <div class="space-y-3">
-                <div><label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">Full name</label><input id="profName" maxlength="60" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan"></div>
-                <div><label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">Birthday</label><input id="profBirthday" type="date" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan"></div>
-                <div class="flex items-center gap-3"><button onclick="saveProfileDetails()" class="px-4 py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs transition">Save changes</button></div>
-            </div>
-            <div class="space-y-2 pt-4 border-t border-slate-800"><div class="text-[11px] font-bold uppercase tracking-widest text-slate-400">My membership</div><div id="profMembership" class="space-y-2"></div></div>
-            <div class="space-y-2 pt-4 border-t border-slate-800"><div class="text-[11px] font-bold uppercase tracking-widest text-slate-400">Waiver</div><div id="profWaiver" class="space-y-3"></div></div>
-            <div class="space-y-3 pt-4 border-t border-slate-800">
-                <div class="text-[11px] font-bold uppercase tracking-widest text-slate-400">Members Board</div>
-                <label class="flex items-start gap-2 text-xs text-slate-300"><input type="checkbox" id="profBoardOk" onchange="setBoardConsent(this.checked)" class="mt-0.5 accent-sky-500"><span>Allow my profile to appear on the public board.</span></label>
-                <p id="profBoardNote" class="text-[11px] text-slate-500"></p>
-                <button onclick="toggleDesigner()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs font-bold w-full"><i class="fa-solid fa-star mr-2"></i> Design my card</button>
-                <div id="designer" class="hidden space-y-3">
-                    <div class="flex gap-4 items-start">
-                        <div id="designPreview" class="relative w-36 shrink-0 select-none rounded-sm p-2 pt-4 shadow-xl" style="container-type:inline-size;touch-action:none"></div>
-                        <div class="flex-1 space-y-3">
-                            <p class="text-[11px] text-slate-400 leading-relaxed">Tap a sticker below to add it, then drag it on your card. Tap a sticker on the card to resize or remove it.</p>
-                            <div id="designColors" class="flex gap-1.5 flex-wrap"></div>
-                            <div id="designSel" class="hidden space-y-1"><input type="range" id="designSize" min="0.7" max="3" step="0.05" oninput="designResize(this.value)" class="w-full accent-sky-500"><button onclick="removeDesignSticker()" class="text-[11px] text-red-300 underline">Remove selected sticker</button></div>
-                        </div>
-                    </div>
-                    <div id="designPalette" class="space-y-2"></div>
-                    <div class="flex items-center gap-2"><button onclick="saveDesign()" class="flex-1 px-4 py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs transition">Save design</button><button onclick="toggleDesigner()" class="flex-1 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs font-bold">Close</button></div>
-                    <p id="designMsg" class="text-[11px] text-slate-400"></p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="resetModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[85] hidden flex items-center justify-center p-4">
-        <form onsubmit="submitPasswordReset(event)" class="w-full max-w-sm bg-brandCard border border-slate-800 rounded-3xl p-6 space-y-3">
-            <h3 class="font-heading font-bold text-xl text-white">Choose a new password</h3>
-            <input type="password" id="resetPw1" required minlength="8" autocomplete="new-password" placeholder="New password (8+ characters)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
-            <input type="password" id="resetPw2" required minlength="8" autocomplete="new-password" placeholder="Type it again" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
-            <p id="resetErr" class="text-xs text-red-400 min-h-[1rem]"></p>
-            <button type="submit" class="w-full py-3 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-sm">Save password</button>
-        </form>
-    </div>
-    <div id="wodModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[80] hidden flex items-center justify-center p-4 overflow-y-auto">
-        <div class="w-full max-w-lg bg-brandCard border border-slate-800 rounded-3xl p-6 space-y-3 my-auto">
-            <h3 class="font-heading font-bold text-xl text-white">Post the WOD <span id="wodModalDate" class="text-brandCyan text-sm"></span></h3>
-            <input id="wodTitle" placeholder="Title (e.g. Monday Grind)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
-            <textarea id="wodWarm" rows="3" placeholder="Warm-up" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan"></textarea>
-            <textarea id="wodStrength" rows="3" placeholder="Strength" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan"></textarea>
-            <textarea id="wodMain" rows="5" placeholder="WOD" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan"></textarea>
-            <textarea id="wodScale" rows="3" placeholder="Scaling options (Rx / Scaled / Beginner)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan"></textarea>
-            <div class="flex flex-wrap items-center gap-2"><button type="button" onclick="document.getElementById('wodPhotoFile').click()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs font-bold">Attach photo</button><span id="wodPhotoName" class="text-[11px] text-slate-400"></span></div>
-            <div class="flex gap-2"><button onclick="saveWod()" class="flex-1 px-4 py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs transition">Save</button><button onclick="closeWodModal()" class="flex-1 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-extrabold text-xs transition">Cancel</button></div>
-        </div>
-    </div>
-    <div id="annModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[80] hidden flex items-center justify-center p-4">
-        <div class="w-full max-w-md bg-brandCard border border-slate-800 rounded-3xl p-6 space-y-3">
-            <h3 class="font-heading font-bold text-xl text-white">Post an announcement</h3>
-            <input id="annTitle" maxlength="80" placeholder="Title" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
-            <textarea id="annBody" rows="4" maxlength="600" placeholder="Message" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan"></textarea>
-            <div class="flex gap-2"><button onclick="saveAnn()" class="flex-1 px-4 py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs transition">Post</button><button onclick="closeAnnModal()" class="flex-1 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-extrabold text-xs transition">Cancel</button></div>
-        </div>
-    </div>
-    <div id="coachModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[80] hidden flex items-center justify-center p-4">
-        <div class="w-full max-w-md bg-brandCard border border-slate-800 rounded-3xl p-6 space-y-3">
-            <h3 class="font-heading font-bold text-xl text-white">My coach profile</h3>
-            <textarea id="coachBio" rows="4" maxlength="600" placeholder="Short bio" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan"></textarea>
-            <input id="coachCerts" maxlength="300" placeholder="Certifications (e.g. CrossFit L2, CPR/First Aid)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
-            <p class="text-[11px] text-slate-500">Shown on the public Coaches page if you allowed it in My Profile.</p>
-            <div class="flex gap-2"><button onclick="saveCoachBio()" class="flex-1 px-4 py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs transition">Save</button><button onclick="closeCoachModal()" class="flex-1 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-extrabold text-xs transition">Close</button></div>
-        </div>
-    </div>
-    <div id="memModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[80] hidden flex items-center justify-center p-4 overflow-y-auto">
-        <div class="w-full max-w-sm bg-brandCard border border-slate-800 rounded-3xl p-6 space-y-3 my-auto">
-            <h3 class="font-heading font-bold text-xl text-white">Membership <span id="memWho" class="text-brandCyan text-sm"></span></h3>
-            <select id="memPlan" onchange="memPlanChanged()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan"><option value="drop_in">Drop-In</option><option value="monthly">Monthly</option><option value="three_month">3 Month</option><option value="six_month">6 Month</option><option value="annual">Annual</option></select>
-            <div class="grid grid-cols-2 gap-2">
-                <div><label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">Start date</label><input id="memStart" type="date" onchange="memPlanChanged(true)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan"></div>
-                <div><label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">Months</label><input id="memMonths" type="number" min="1" max="24" value="1" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan"></div>
-            </div>
-            <label class="flex items-center gap-2 text-xs text-slate-300"><input type="checkbox" id="memAddon" class="accent-sky-500"> Comp Camp with Open Gym (add-on)</label>
-            <div><label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">Next payment due</label>
-                <div class="flex gap-2"><input id="memNext" type="date" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan"><button onclick="moveMembershipDueDate(1)" class="px-3 py-2 rounded-xl bg-slate-800 text-white border border-slate-700 text-xs font-bold">+1 mo</button></div>
-                <p class="text-[11px] text-slate-500 mt-1">After a member pays, tap +1 mo to move the due date forward.</p></div>
-            <p class="text-[11px] text-slate-500">The end date is worked out from the start date and months. This only tracks dates, it does not take payments.</p>
-            <div class="flex gap-2"><button onclick="saveMem()" class="flex-1 px-4 py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs transition">Save</button><button onclick="closeMemModal()" class="flex-1 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-extrabold text-xs transition">Close</button></div>
-        </div>
-    </div>
-    <div id="eventModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-[90] hidden overflow-y-auto p-3 sm:p-6" onclick="if(event.target===this) closeEventModal()"><div id="eventModalBody" class="w-full max-w-3xl mx-auto my-6"></div></div>
-    <div id="eventFormModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[95] hidden flex items-center justify-center p-4 overflow-y-auto">
-        <div class="w-full max-w-md bg-brandCard border border-slate-800 rounded-3xl p-6 space-y-3 my-auto">
-            <h3 id="evFormTitle" class="font-heading font-bold text-xl text-white">Add event / comp</h3>
-            <input id="evTitle" maxlength="80" placeholder="Title (e.g. Cainta Throwdown 2026)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
-            <select id="evKind" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan"><option value="comp">Competition</option><option value="community">Community</option><option value="special">Special Event</option></select>
-            <div class="grid grid-cols-2 gap-2"><div><label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">Date</label><input id="evDate" type="date" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan"></div><div><label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">Time</label><input id="evTime" type="time" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan"></div></div>
-            <input id="evLoc" maxlength="120" placeholder="Location" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
-            <textarea id="evDetails" rows="3" maxlength="800" placeholder="Details (divisions, registration, notes)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan"></textarea>
-            <div class="flex flex-wrap items-center gap-2"><button type="button" onclick="document.getElementById('evCoverFile').click()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs font-bold">Choose cover</button><span id="evCoverName" class="text-[11px] text-slate-400"></span></div>
-            <div class="flex gap-2"><button onclick="saveEvent()" class="flex-1 px-4 py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs transition">Save</button><button onclick="closeEventForm()" class="flex-1 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-extrabold text-xs transition">Cancel</button></div>
-        </div>
-    </div>
-    <div id="albumModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-[90] hidden overflow-y-auto p-3 sm:p-6" onclick="if(event.target===this) closeAlbumModal()"><div id="albumModalBody" class="w-full max-w-3xl mx-auto my-6"></div></div>
-    <div id="albumFormModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[95] hidden flex items-center justify-center p-4">
-        <div class="w-full max-w-md bg-brandCard border border-slate-800 rounded-3xl p-6 space-y-3">
-            <h3 id="albFormTitle" class="font-heading font-bold text-xl text-white">New album</h3>
-            <input id="albTitle" maxlength="80" placeholder="Album name (e.g. Cainta Throwdown 2026)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
-            <textarea id="albDesc" rows="3" maxlength="300" placeholder="Description (optional)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan"></textarea>
-            <div class="flex gap-2"><button onclick="saveAlbum()" class="flex-1 px-4 py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs transition">Save</button><button onclick="closeAlbumForm()" class="flex-1 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-extrabold text-xs transition">Cancel</button></div>
-        </div>
-    </div>
-    <div id="lightbox" class="fixed inset-0 z-[110] hidden bg-black">
-        <div id="lbStage" class="w-full h-full flex items-center justify-center p-2"></div>
-        <button onclick="closeLightbox()" class="absolute top-3 right-3 w-10 h-10 rounded-full bg-white/15 text-white"><i class="fa-solid fa-xmark"></i></button>
-        <button onclick="lbStep(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/15 text-white"><i class="fa-solid fa-chevron-left"></i></button>
-        <button onclick="lbStep(1)" class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/15 text-white"><i class="fa-solid fa-chevron-right"></i></button>
-        <div id="lbCount" class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-xs font-bold"></div>
-        <a id="lbFull" target="_blank" rel="noopener" class="hidden absolute bottom-3 right-3 px-3 py-1.5 rounded-full bg-white/15 text-white text-xs font-bold">Full size</a>
-    </div>
-    <div id="corkEditor" class="hidden fixed inset-x-0 bottom-0 z-[70] bg-brandCard border-t border-slate-700 p-3 max-h-[55vh] overflow-y-auto shadow-2xl shadow-black">
-        <div class="max-w-2xl mx-auto space-y-2">
-            <div class="flex items-center justify-between gap-2"><div class="text-sm font-heading font-bold text-white">Decorate my cork board</div><div class="flex gap-2"><button onclick="saveCorkDecor()" class="px-3 py-1.5 rounded-lg bg-brandCyan text-slate-950 text-[11px] font-extrabold">Save</button><button onclick="closeCorkEditor()" class="px-3 py-1.5 rounded-lg bg-slate-800 text-white text-[11px] font-bold">Close</button></div></div>
-            <p class="text-[11px] text-slate-400">Tap a sticker to add it, drag it anywhere on the board, tap it again to resize or remove. Only you see your decorations.</p>
-            <div id="corkSel" class="hidden flex items-center gap-3"><input type="range" id="corkSize" min="0.5" max="4" step="0.05" oninput="corkResize(this.value)" class="flex-1 accent-sky-500"><button onclick="removeSelectedSticker()" class="text-[11px] text-red-300 underline">Remove</button></div>
-            <div id="corkPalette" class="space-y-2"></div>
-            <div class="flex items-center justify-between"><button onclick="corkClear()" class="text-[11px] text-slate-400 underline">Clear all</button><span id="corkMsg" class="text-[11px] text-slate-500"></span></div>
-        </div>
-    </div>
-    <!-- INSTALL HELP MODAL -->
-    <div id="installModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[80] hidden flex items-center justify-center p-4" onclick="if(event.target===this) closeInstallModal()">
-        <div class="w-full max-w-md bg-brandCard border border-slate-800 rounded-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between">
-                <h3 class="font-heading font-bold text-xl text-white">Install on your phone</h3>
-                <button onclick="closeInstallModal()" class="w-8 h-8 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 text-sm">&times;</button>
-            </div>
-            <div class="space-y-3 text-xs text-slate-300">
-                <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
-                    <div class="font-bold text-brandCyan mb-1">iPhone (Safari)</div>
-                    <ol class="list-decimal list-inside space-y-0.5">
-                        <li>Tap the <strong>Share</strong> button at the bottom of Safari</li>
-                        <li>Scroll and tap <strong>Add to Home Screen</strong></li>
-                        <li>Tap <strong>Add</strong></li>
-                    </ol>
-                </div>
-                <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
-                    <div class="font-bold text-brandCyan mb-1">Android (Chrome)</div>
-                    <ol class="list-decimal list-inside space-y-0.5">
-                        <li>Tap the <strong>menu</strong> (3 dots) at the top right</li>
-                        <li>Tap <strong>Install app</strong> or <strong>Add to Home screen</strong></li>
-                    </ol>
-                </div>
-                <p class="text-[11px] text-slate-500">No install option? Open the app from its own website link in Safari or Chrome (not inside Facebook, Messenger or Viber) and try again.</p>
-            </div>
-            <button onclick="closeInstallModal()" class="w-full py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-sm transition">Got it</button>
-        </div>
-    </div>
-
-    <!-- MOBILE BOTTOM NAV -->
-    <nav id="mobileNav" class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-brandDark/95 backdrop-blur-md border-t border-slate-800 flex items-stretch" style="padding-bottom: env(safe-area-inset-bottom, 0px);">
-        <button onclick="switchTab('home')" id="mnav-home" class="flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-bold text-brandCyan"><i class="fa-solid fa-house text-lg"></i>Home</button>
-        <button onclick="switchTab('membersboard')" id="mnav-membersboard" class="flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-bold text-slate-400"><i class="fa-solid fa-note-sticky text-lg"></i>Board</button>
-        <button onclick="switchTab('schedule')" id="mnav-schedule" class="flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-bold text-slate-400"><i class="fa-solid fa-calendar-days text-lg"></i>Class</button>
-        <button onclick="switchTab('events')" id="mnav-events" class="flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-bold text-slate-400"><i class="fa-solid fa-trophy text-lg"></i>Events</button>
-        <button onclick="switchTab('formcheck')" id="mnav-formcheck" class="flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-bold text-slate-400"><i class="fa-solid fa-video text-lg"></i>Form</button>
-        <button onclick="switchTab('timer')" id="mnav-timer" class="flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-bold text-slate-400"><i class="fa-solid fa-dumbbell text-lg"></i>Train</button>
-        <button onclick="switchTab('prs')" id="mnav-prs" class="flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-bold text-slate-400"><i class="fa-solid fa-trophy text-lg"></i>PRs</button>
-        <button onclick="switchTab('admin')" id="mnav-admin" class="hidden flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-bold text-slate-400"><i class="fa-solid fa-user-gear text-lg"></i>Admin</button>
-    </nav>
-
-    <!-- APPLICATION SCRIPT -->
     <script>
-        // ===== SUPABASE (shared accounts, database and video storage) =====
-        const SUPABASE_URL = 'https://uhelksrmjfjdenqqilrh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVoZWxrc3JtamZqZGVucXFpbHJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwODIwODYsImV4cCI6MjEwODY1ODA4Nn0.';
+      const rawAlbums = [
+        { id: 'g1', title: 'Gruode Match', date: '0 hrs - 30 Oct, 2026', image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=900&q=80' },
+        { id: 'g2', title: 'Workout Flow', date: '2 hrs - 14 Nov, 2026', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=900&q=80' },
+        { id: 'g3', title: 'Community Lift', date: '4 hrs - 25 Nov, 2026', image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=900&q=80' }
+      ];
 
-        const sb = (window.supabase && window.supabase.createClient)
-            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-                auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
-            })
-            : null;
+      const albumContainer = document.getElementById('albumsContainer');
 
-        let activeRole = 'Guest';
-        let currentProfile = null;
-        const _today = new Date();
-        let selectedCalendarDate = new Date(_today.getFullYear(), _today.getMonth(), _today.getDate());
-        let calViewYear = selectedCalendarDate.getFullYear(), calViewMonth = selectedCalendarDate.getMonth();
-
-        function fcEsc(s) {
-            return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-        }
-
-        function roleFromDb(r) {
-            return r === 'head_coach' ? 'Head Coach' : r === 'coach' ? 'Coach' : 'Member';
-        }
-
-        function roleLabelFromDb(r) {
-            return r === 'head_coach' ? 'Head Coach' : r === 'coach' ? 'Assistant Coach' : 'Member';
-        }
-
-        // ===== INSTALL APP =====
-        let deferredInstallPrompt = null;
-
-        window.addEventListener('beforeinstallprompt', e => {
-            e.preventDefault();
-            deferredInstallPrompt = e;
+      function dedupeAlbums(items) {
+        const seen = new Set();
+        return items.filter((item) => {
+          const key = `${item.id || item.title || item.date}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
         });
+      }
 
-        window.addEventListener('appinstalled', () => {
-            deferredInstallPrompt = null;
-            closeInstallModal();
-            updateInstallButtons();
+      function renderAlbums() {
+        const albums = dedupeAlbums(rawAlbums);
+        albumContainer.innerHTML = '';
+
+        if (!albums.length) {
+          albumContainer.innerHTML = `
+            <div class="col-span-full rounded-2xl border border-dashed border-slate-700 bg-slate-900/40 p-10 text-center text-sm text-slate-400">
+              No albums yet. Create your first album.
+            </div>
+          `;
+          return;
+        }
+
+        albums.forEach((album) => {
+          const card = document.createElement('article');
+          card.className = 'album-card overflow-hidden rounded-2xl';
+          card.innerHTML = `
+            <div class="album-thumb relative aspect-[4/3] overflow-hidden">
+              <img src="${album.image}" alt="${album.title}" class="h-full w-full object-cover" loading="lazy" />
+              <div class="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-slate-950/70 text-[11px] text-white ring-2 ring-slate-800/80">
+                <i class="fa-solid fa-camera"></i>
+              </div>
+            </div>
+            <div class="space-y-2 p-4">
+              <h3 class="text-xl font-bold text-white">${album.title}</h3>
+              <p class="text-xs uppercase tracking-[0.2em] text-slate-400">${album.date}</p>
+            </div>
+          `;
+          albumContainer.appendChild(card);
         });
+      }
 
-        function isStandalone() {
-            return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
-        }
-
-        function updateInstallButtons() {
-            document.querySelectorAll('.install-btn').forEach(b => { b.style.display = isStandalone() ? 'none' : ''; });
-        }
-
-        async function installApp() {
-            if (deferredInstallPrompt) {
-                deferredInstallPrompt.prompt();
-                try { await deferredInstallPrompt.userChoice; } catch (e) {}
-                deferredInstallPrompt = null;
-                return;
-            }
-            document.getElementById('installModal').classList.remove('hidden');
-        }
-
-        function closeInstallModal() {
-            document.getElementById('installModal').classList.add('hidden');
-        }
-
-        // ===== ACCOUNTS (Supabase Auth) =====
-        function initialsAvatar(name) {
-            const parts = String(name || '?').trim().split(/\s+/);
-            let initials = ((parts[0] || '?')[0] + (parts.length > 1 ? parts[parts.length - 1][0] : '')).toUpperCase();
-            initials = initials.replace(/[^\p{L}\p{N}]/gu, '') || '?';
-            const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><rect width='120' height='120' fill='#1a2234'/><text x='60' y='60' text-anchor='middle' dominant-baseline='middle' font-size='46' fill='white' font-family='Arial, sans-serif'>${initials}</text></svg>`;
-            return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
-        }
-
-        function avatarFallback(img) {
-            img.onerror = null;
-            img.src = initialsAvatar(img.alt);
-        }
-
-        function setNotice(text) {
-            const el = document.getElementById('accountNotice');
-            if (!el) return;
-            if (!text) { el.classList.add('hidden'); el.innerText = ''; return; }
-            el.innerText = text;
-            el.classList.remove('hidden');
-        }
-
-        function applySession(p) {
-            currentProfile = p;
-            const approved = !!p && p.status === 'approved';
-            const name = p ? p.full_name : 'Guest Visitor';
-            const avatar = document.getElementById('profileAvatar');
-            const formName = document.getElementById('formMemberName');
-
-            avatar.alt = name;
-            avatar.src = (p && p.photo_url) ? p.photo_url : initialsAvatar(name);
-            const pm = document.getElementById('profModalPhoto'); if (pm && p) pm.src = avatar.src;
-            document.getElementById('profileName').innerText = name;
-            document.getElementById('photoPrompt').classList.toggle('hidden', !(p && !p.photo_url));
-            renderProfileMenu();
-
-            if (p && p.status === 'pending') {
-                setNotice('Your account is waiting for Head Coach approval. You can look around, but you cannot upload videos yet.');
-            } else if (p && p.status === 'rejected') {
-                setNotice('Your application was not approved. Please talk to a coach.');
-            } else {
-                setNotice(p ? memberReminder(p) : '');
-            }
-
-            formName.value = p ? p.full_name : '';
-            formName.readOnly = true;
-            formName.classList.toggle('opacity-70', !!p);
-
-            changeActiveRole(approved ? roleFromDb(p.role) : 'Guest');
-        }
-
-        function showLogin() {
-            const err = document.getElementById('loginError');
-            if (err) err.innerText = '';
-            document.getElementById('loginOverlay').classList.remove('hidden');
-        }
-
-        function hideLogin() {
-            document.getElementById('loginOverlay').classList.add('hidden');
-        }
-
-        async function loadProfile(userId) {
-            for (let i = 0; i < 4; i++) {
-                const { data } = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
-                if (data) return data;
-                await new Promise(r => setTimeout(r, 450));
-            }
-            return null;
-        }
-
-        async function handleSession(event, session) {
-            if (!session) {
-                applySession(null);
-                let guest = false;
-                try { guest = localStorage.getItem('cainta_guest') === '1'; } catch (e) {}
-                if (event === 'SIGNED_OUT' || !guest) showLogin();
-                return;
-            }
-            if (event === 'SIGNED_IN' && currentProfile && currentProfile.id === session.user.id) return;
-
-            const profile = await loadProfile(session.user.id);
-            applySession(profile);
-            hideLogin();
-            if (event === 'SIGNED_IN') switchTab('home');
-            if (!profile) alert('Your account was created, but your profile could not be loaded. Please refresh the page.');
-        }
-
-        function initAuth() {
-            renderMembersBoard();
-            if (!sb) {
-                applySession(null);
-                showLogin();
-                document.getElementById('loginError').innerText = 'Could not load the login service. Check your internet connection and reload the page.';
-                return;
-            }
-            sb.auth.onAuthStateChange((event, session) => {
-                if (event === 'PASSWORD_RECOVERY') { setTimeout(handlePasswordRecovery, 0); return; }
-                if (['INITIAL_SESSION', 'SIGNED_IN', 'SIGNED_OUT', 'USER_UPDATED'].includes(event)) {
-                    setTimeout(() => handleSession(event, session), 0);
-                }
-            });
-        }
-
-        async function handleLoginSubmit(e) {
-            e.preventDefault();
-            if (!sb) return;
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
-            const btn = document.getElementById('loginSubmit');
-            const err = document.getElementById('loginError');
-
-            err.innerText = '';
-            btn.disabled = true;
-            btn.innerText = 'Logging in...';
-            const { error } = await sb.auth.signInWithPassword({ email, password });
-            btn.disabled = false;
-            btn.innerText = 'Log in';
-
-            if (error) { err.innerText = error.message; return; }
-            try { localStorage.removeItem('cainta_guest'); } catch (e2) {}
-            document.getElementById('loginPassword').value = '';
-        }
-
-        async function forgotPassword() {
-            const err = document.getElementById('loginError');
-            const email = document.getElementById('loginEmail').value.trim();
-            if (!sb) return;
-            if (!email) { err.innerText = 'Type your email above first, then tap Forgot password.'; return; }
-            const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
-            if (error) { err.innerText = error.message; return; }
-            err.innerText = '';
-            alert('If that email has an account, a password reset link is on its way. Open the link in the same browser you normally use for the app.');
-        }
+      renderAlbums();
     </script>
-</body>
+  </body>
 </html>
