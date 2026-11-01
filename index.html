@@ -21,11 +21,11 @@
             theme: {
                 extend: {
                     colors: {
-                        brandCyan: '#00a8ff',
-                        brandCyanBright: '#00ccff',
-                        brandCyanDark: '#0077b6',
-                        brandDark: '#080a0f',
-                        brandCard: '#0d1017',
+                        brandCyan: 'rgb(var(--c-cyan) / <alpha-value>)',
+                        brandCyanBright: 'rgb(var(--c-cyan-b) / <alpha-value>)',
+                        brandCyanDark: 'rgb(var(--c-cyan-d) / <alpha-value>)',
+                        brandDark: 'rgb(var(--c-dark) / <alpha-value>)',
+                        brandCard: 'rgb(var(--c-card) / <alpha-value>)',
                         corkWood: '#3e220f',
                     },
                     fontFamily: {
@@ -42,6 +42,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 
     <style>
+        :root { --c-dark: 8 10 15; --c-card: 13 16 23; --c-cyan: 0 168 255; --c-cyan-b: 0 204 255; --c-cyan-d: 0 119 182; }
         .corkboard-bg {
             background-color: #cb9b61;
             background-image: 
@@ -107,16 +108,34 @@
             width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #080a0f;
+            background: rgb(var(--c-dark));
         }
         ::-webkit-scrollbar-thumb {
             background: #1a2234;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #00a8ff;
+            background: rgb(var(--c-cyan));
         }
     </style>
+    <script>
+        var BG_THEMES = {
+            midnight: ['Midnight', '8 10 15', '13 16 23'], black: ['Black', '0 0 0', '12 12 12'], navy: ['Navy', '7 13 28', '12 22 44'],
+            forest: ['Forest', '6 17 12', '11 28 20'], plum: ['Plum', '15 8 22', '24 14 34'], wine: ['Wine', '22 8 12', '34 14 20'], graphite: ['Graphite', '24 26 31', '33 36 43']
+        };
+        var ACCENTS = {
+            cyan: ['Cyan', '0 168 255', '0 204 255', '0 119 182'], orange: ['Orange', '255 122 0', '255 159 51', '204 92 0'], green: ['Green', '34 197 94', '74 222 128', '22 163 74'],
+            red: ['Red', '239 68 68', '248 113 113', '185 28 28'], purple: ['Purple', '168 85 247', '192 132 252', '126 34 206'], pink: ['Pink', '236 72 153', '244 114 182', '190 24 93']
+        };
+        function getTheme() { var t = {}; try { t = JSON.parse(localStorage.getItem('cainta_theme') || '{}') || {}; } catch (e) {} return { bg: BG_THEMES[t.bg] ? t.bg : 'midnight', accent: ACCENTS[t.accent] ? t.accent : 'cyan' }; }
+        function applyTheme(t) {
+            t = t || getTheme(); var b = BG_THEMES[t.bg], a = ACCENTS[t.accent], r = document.documentElement.style;
+            r.setProperty('--c-dark', b[1]); r.setProperty('--c-card', b[2]);
+            r.setProperty('--c-cyan', a[1]); r.setProperty('--c-cyan-b', a[2]); r.setProperty('--c-cyan-d', a[3]);
+            var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', 'rgb(' + b[1].split(' ').join(',') + ')');
+        }
+        applyTheme();
+    </script>
 </head>
 <body class="bg-brandDark text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-brandCyan selection:text-black">
 
@@ -606,6 +625,35 @@
                     <p id="designMsg" class="text-[11px] text-slate-400"></p>
                 </div>
             </div>
+        </div>
+    </div>
+    <div id="settingsModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[80] hidden overflow-y-auto p-3 sm:p-6" onclick="if(event.target===this) closeSettings()">
+        <div class="w-full max-w-md mx-auto my-4 bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-6">
+            <div class="flex items-center justify-between">
+                <h3 class="font-heading font-bold text-xl text-white flex items-center gap-2"><i class="fa-solid fa-gear text-brandCyan"></i> Settings</h3>
+                <button onclick="closeSettings()" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-4">
+                <div class="text-xs font-extrabold text-brandCyan uppercase tracking-widest"><i class="fa-solid fa-palette"></i> Appearance</div>
+                <div>
+                    <div class="text-xs font-bold text-slate-300 mb-2">Background color</div>
+                    <div id="bgSwatches" class="grid grid-cols-4 gap-2"></div>
+                </div>
+                <div>
+                    <div class="text-xs font-bold text-slate-300 mb-2">Accent color (buttons and highlights)</div>
+                    <div id="accentSwatches" class="flex flex-wrap gap-3"></div>
+                </div>
+                <button onclick="resetTheme()" class="text-xs font-bold text-slate-400 hover:text-white underline">Reset to default</button>
+                <p class="text-[11px] text-slate-500">Saved on this phone or browser only.</p>
+            </div>
+            <form id="pwSection" onsubmit="changePassword(event)" class="space-y-3 border-t border-slate-800 pt-5">
+                <div class="text-xs font-extrabold text-brandCyan uppercase tracking-widest"><i class="fa-solid fa-lock"></i> Change password</div>
+                <input type="password" id="pwCurrent" required autocomplete="current-password" placeholder="Current password" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
+                <input type="password" id="pwNew1" required minlength="8" autocomplete="new-password" placeholder="New password (8+ characters)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
+                <input type="password" id="pwNew2" required minlength="8" autocomplete="new-password" placeholder="Type the new password again" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
+                <p id="pwMsg" class="text-xs min-h-[1rem]"></p>
+                <button id="pwBtn" type="submit" class="w-full py-3 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-sm">Update password</button>
+            </form>
         </div>
     </div>
     <div id="resetModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[85] hidden flex items-center justify-center p-4">
@@ -3006,26 +3054,71 @@ function membershipParts() {
 
         
         // ===== PROFILE DROPDOWN MENU =====
+        // ===== SETTINGS: theme + change password =====
+        function openSettings() {
+            document.getElementById('pwSection').classList.toggle('hidden', !currentProfile);
+            document.getElementById('pwMsg').innerText = '';
+            renderSettings();
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+        function closeSettings() { document.getElementById('settingsModal').classList.add('hidden'); }
+        function renderSettings() {
+            const t = getTheme();
+            document.getElementById('bgSwatches').innerHTML = Object.keys(BG_THEMES).map(k => {
+                const b = BG_THEMES[k], on = t.bg === k;
+                return `<button onclick="setTheme('bg','${k}')" class="rounded-xl p-1.5 border-2 ${on ? 'border-brandCyan' : 'border-slate-700'} text-center" style="background:rgb(${b[1]})"><span class="block h-6 rounded-lg border border-white/10" style="background:rgb(${b[2]})"></span><span class="block text-[10px] font-bold mt-1 ${on ? 'text-brandCyan' : 'text-slate-300'}">${b[0]}</span></button>`;
+            }).join('');
+            document.getElementById('accentSwatches').innerHTML = Object.keys(ACCENTS).map(k => {
+                const a = ACCENTS[k], on = t.accent === k;
+                return `<button onclick="setTheme('accent','${k}')" title="${a[0]}" class="w-10 h-10 rounded-full border-2 ${on ? 'border-white ring-2 ring-offset-2 ring-offset-brandCard ring-white/60' : 'border-slate-700'}" style="background:rgb(${a[1]})">${on ? '<i class="fa-solid fa-check text-slate-950 text-xs"></i>' : ''}</button>`;
+            }).join('');
+        }
+        function setTheme(kind, key) {
+            const t = getTheme(); t[kind] = key;
+            try { localStorage.setItem('cainta_theme', JSON.stringify(t)); } catch (e) {}
+            applyTheme(t); renderSettings();
+        }
+        function resetTheme() { try { localStorage.removeItem('cainta_theme'); } catch (e) {} applyTheme(); renderSettings(); }
+        async function changePassword(e) {
+            e.preventDefault();
+            const msg = document.getElementById('pwMsg'), btn = document.getElementById('pwBtn');
+            const cur = document.getElementById('pwCurrent').value, a = document.getElementById('pwNew1').value, b = document.getElementById('pwNew2').value;
+            const bad = t => { msg.className = 'text-xs text-red-400 min-h-[1rem]'; msg.innerText = t; };
+            if (!sb || !currentProfile) { bad('Please log in first.'); return; }
+            if (a.length < 8) { bad('The new password must be at least 8 characters.'); return; }
+            if (a !== b) { bad('The two new passwords do not match.'); return; }
+            if (a === cur) { bad('Choose a password different from your current one.'); return; }
+            btn.disabled = true; btn.innerText = 'Updating...'; msg.innerText = '';
+            const chk = await sb.auth.signInWithPassword({ email: currentProfile.email, password: cur });
+            if (chk.error) { btn.disabled = false; btn.innerText = 'Update password'; bad('Your current password is not correct.'); return; }
+            const { error } = await sb.auth.updateUser({ password: a });
+            btn.disabled = false; btn.innerText = 'Update password';
+            if (error) { bad(error.message); return; }
+            e.target.reset();
+            msg.className = 'text-xs text-green-400 min-h-[1rem]'; msg.innerText = 'Password updated. Use the new one next time you log in.';
+        }
+
         function renderProfileMenu() {
             const p = currentProfile, menu = document.getElementById('profileMenu');
             if (!menu) return;
             const item = (act, icon, text, cls) => `<button onclick="menuAct('${act}')" class="w-full text-left px-4 py-3 text-sm font-semibold ${cls || 'text-slate-200'} hover:bg-slate-800 flex items-center gap-3"><i class="fa-solid fa-${icon} w-4 text-center ${cls ? '' : 'text-brandCyan'}"></i>${text}</button>`;
             const top = p ? `<div class="px-4 py-3 border-b border-slate-800"><div class="text-sm font-bold text-white truncate">${fcEsc(p.full_name)}</div><div class="text-[11px] text-slate-400 truncate">${fcEsc(p.email || '')}</div>${p.status !== 'approved' ? `<div class="mt-1 text-[10px] font-bold text-amber-400 uppercase">${fcEsc(p.status)}</div>` : ''}</div>` : `<div class="px-4 py-3 border-b border-slate-800 text-xs text-slate-400">You are browsing as a guest.</div>`;
             menu.innerHTML = top + (p
-                ? item('profile', 'user', 'Profile') + item('install', 'download', 'Install app') + '<div class="border-t border-slate-800">' + item('logout', 'right-from-bracket', 'Log out', 'text-red-400') + '</div>'
-                : item('login', 'right-to-bracket', 'Log in / Create account') + item('install', 'download', 'Install app'));
+                ? item('profile', 'user', 'Profile') + item('settings', 'gear', 'Settings') + item('install', 'download', 'Install app') + '<div class="border-t border-slate-800">' + item('logout', 'right-from-bracket', 'Log out', 'text-red-400') + '</div>'
+                : item('login', 'right-to-bracket', 'Log in / Create account') + item('settings', 'gear', 'Settings') + item('install', 'download', 'Install app'));
         }
         function toggleProfileMenu(e) { e.stopPropagation(); document.getElementById('profileMenu').classList.toggle('hidden'); }
         function closeProfileMenu() { const m = document.getElementById('profileMenu'); if (m) m.classList.add('hidden'); }
         function menuAct(a) {
             closeProfileMenu();
             if (a === 'profile') openProfileModal();
+            else if (a === 'settings') openSettings();
             else if (a === 'install') installApp();
             else if (a === 'logout') logout();
             else if (a === 'login') showLogin();
         }
         document.addEventListener('click', ev => { const m = document.getElementById('profileMenu'); if (m && !m.classList.contains('hidden') && !m.contains(ev.target)) closeProfileMenu(); });
-        document.addEventListener('keydown', ev => { if (ev.key === 'Escape') closeProfileMenu(); });
+        document.addEventListener('keydown', ev => { if (ev.key === 'Escape') { closeProfileMenu(); closeSettings(); } });
 
         
         // ===== STICKER LIBRARY (any emoji + word badges) =====
