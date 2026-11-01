@@ -163,6 +163,13 @@
                     <i class="fa-solid fa-download text-brandCyan"></i> Install App
                 </button>
                 <div class="relative">
+                    <button id="notifBtn" onclick="toggleNotifPanel(event)" title="Notifications" class="hidden relative w-10 h-10 rounded-full bg-slate-900 border border-slate-700 hover:border-brandCyan text-slate-200 flex items-center justify-center transition">
+                        <i class="fa-solid fa-bell"></i>
+                        <span id="notifBadge" class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center">0</span>
+                    </button>
+                    <div id="notifPanel" onclick="event.stopPropagation()" class="hidden fixed inset-x-3 top-20 sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-3 sm:w-96 max-h-[70vh] overflow-y-auto bg-brandCard border border-slate-700 rounded-2xl shadow-2xl shadow-black/60 z-50"></div>
+                </div>
+                <div class="relative">
                     <button id="profileBtn" onclick="toggleProfileMenu(event)" aria-haspopup="true" class="flex items-center gap-3 text-left">
                         <img id="profileAvatar" alt="" onerror="avatarFallback(this)" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-brandCyan shadow-lg shadow-brandCyan/10 bg-slate-800">
                         <span class="leading-tight block">
@@ -844,6 +851,7 @@
             formName.classList.toggle('opacity-70', !!p);
 
             changeActiveRole(approved ? roleFromDb(p.role) : 'Guest');
+            setupNotifications();
         }
 
         function showLogin() {
@@ -1707,9 +1715,10 @@
 
             const ds = isoDate(d);
             const counts = {}, mine = {}, names = {};
+            let dayCoach;
             const draw = loaded => {
                 const approved = !!currentProfile && currentProfile.status === 'approved';
-                container.innerHTML = scheduleEventsHtml(ds) + plan[2].map(key => {
+                container.innerHTML = scheduleEventsHtml(ds) + dayCoachHtml(ds, dayCoach) + plan[2].map(key => {
                     const s = SLOT_DEFS[key];
                     const taken = counts[key] || 0;
                     const started = Date.now() > new Date(d.getFullYear(), d.getMonth(), d.getDate(), s.h, s.m).getTime();
@@ -1729,6 +1738,11 @@
             try {
                 const r = await sb.rpc('class_counts', { p_from: ds, p_to: ds });
                 (r.data || []).forEach(x => { counts[x.slot] = x.taken; });
+                try {
+                    const dc = await sb.from('day_coaches').select('coach_id,coach_name').eq('class_date', ds).maybeSingle();
+                    dayCoach = dc.data || null;
+                    if (isCoachRole() && !coachChoices) { const cc = await sb.rpc('assignable_coaches'); coachChoices = cc.data || []; }
+                } catch (e) { dayCoach = undefined; }
                 if (currentProfile && currentProfile.status === 'approved') {
                     const b = await sb.from('class_bookings').select('id,owner,slot,member_name').eq('class_date', ds);
                     (b.data || []).forEach(x => {
@@ -1738,6 +1752,23 @@
                 }
             } catch (e) {}
             if (req === scheduleReq) draw(true);
+        }
+
+        let coachChoices = null;
+        function dayCoachHtml(ds, dc) {
+            if (dc === undefined) return '';
+            const name = dc && dc.coach_name, me = !!(dc && currentProfile && dc.coach_id === currentProfile.id);
+            let h = `<div class="p-3 rounded-2xl bg-brandCyan/10 border border-brandCyan/30"><div class="flex items-center gap-2 text-xs"><i class="fa-solid fa-user-tie text-brandCyan"></i><span class="text-slate-400">Coach for this day:</span>${name ? `<span class="font-bold text-white">${fcEsc(name)}${me ? ' (you)' : ''}</span>` : '<span class="italic text-slate-500">Not assigned yet</span>'}</div>`;
+            if (isCoachRole() && coachChoices) {
+                h += `<select onchange="setDayCoach('${ds}', this.value)" class="mt-2 w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brandCyan"><option value="">Not assigned</option>${coachChoices.map(c => `<option value="${fcEsc(c.id)}"${dc && dc.coach_id === c.id ? ' selected' : ''}>${fcEsc(c.full_name)}${c.role === 'head_coach' ? ' (Head Coach)' : ''}</option>`).join('')}</select><div class="text-[10px] text-slate-500 mt-1.5">The assigned coach gets a notification with the member list whenever someone reserves or cancels.</div>`;
+            }
+            return h + '</div>';
+        }
+        async function setDayCoach(ds, id) {
+            if (!sb || !isCoachRole()) return;
+            const r = id ? await sb.from('day_coaches').upsert({ class_date: ds, coach_id: id }, { onConflict: 'class_date' }) : await sb.from('day_coaches').delete().eq('class_date', ds);
+            if (r.error) alert('Could not save the coach: ' + r.error.message);
+            renderScheduleDetails();
         }
 
         async function bookSlot(ds, slot) {
@@ -1753,6 +1784,87 @@
             if (error) alert('Could not cancel: ' + error.message);
             renderScheduleDetails();
         }
+
+        // ===== NOTIFICATIONS (bell for coaches) =====
+        let notifItems = [], notifChan = null, notifTimer = null, notifUser = null, notifFirst = true;
+        function notifEligible() { return !!currentProfile && currentProfile.status === 'approved' && ['coach', 'head_coach'].includes(currentProfile.role); }
+        function setupNotifications() {
+            const btn = document.getElementById('notifBtn'); if (!btn) return;
+            if (!sb || !notifEligible()) { stopNotifications(); btn.classList.add('hidden'); return; }
+            btn.classList.remove('hidden');
+            if (notifUser === currentProfile.id) return;
+            stopNotifications(); notifUser = currentProfile.id; notifFirst = true;
+            loadNotifications();
+            notifTimer = setInterval(loadNotifications, 60000);
+            try { notifChan = sb.channel('notif-' + notifUser).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: 'user_id=eq.' + notifUser }, () => loadNotifications()).subscribe(); } catch (e) {}
+        }
+        function stopNotifications() {
+            if (notifTimer) clearInterval(notifTimer); notifTimer = null;
+            if (notifChan && sb) { try { sb.removeChannel(notifChan); } catch (e) {} }
+            notifChan = null; notifUser = null; notifItems = [];
+            updateNotifBadge();
+        }
+        async function loadNotifications() {
+            if (!notifUser || !sb) return;
+            const { data, error } = await sb.from('notifications').select('*').order('created_at', { ascending: false }).limit(40);
+            if (error || !data) return;
+            const known = new Set(notifItems.map(n => n.id));
+            const fresh = data.filter(n => !n.read_at && !known.has(n.id));
+            notifItems = data;
+            if (!notifFirst) fresh.forEach(showNewNotif);
+            notifFirst = false;
+            updateNotifBadge(); renderNotifPanel();
+        }
+        function showNewNotif(n) {
+            const t = document.createElement('div');
+            t.className = 'fixed top-24 inset-x-3 sm:inset-x-auto sm:right-6 sm:w-80 z-[90] bg-brandCard border border-brandCyan/50 rounded-2xl p-3 shadow-2xl text-xs text-white cursor-pointer';
+            t.innerHTML = '<div class="font-extrabold text-brandCyan"><i class="fa-solid fa-bell"></i> ' + fcEsc(n.title) + '</div><div class="text-slate-300 mt-1 whitespace-pre-line">' + fcEsc(String(n.body).split('\n\n')[0]) + '</div>';
+            t.onclick = () => { t.remove(); toggleNotifPanel({ stopPropagation() {} }, true); };
+            document.body.appendChild(t); setTimeout(() => t.remove(), 7000);
+            try {
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    const opts = { body: n.body, icon: 'icon-192.png', tag: n.id };
+                    if (navigator.serviceWorker) navigator.serviceWorker.ready.then(r => r.showNotification(n.title, opts)).catch(() => new Notification(n.title, opts));
+                    else new Notification(n.title, opts);
+                }
+            } catch (e) {}
+        }
+        function updateNotifBadge() {
+            const b = document.getElementById('notifBadge'); if (!b) return;
+            const c = notifItems.filter(n => !n.read_at).length;
+            b.innerText = c > 9 ? '9+' : c; b.classList.toggle('hidden', c === 0);
+        }
+        function toggleNotifPanel(e, forceOpen) {
+            if (e && e.stopPropagation) e.stopPropagation();
+            const p = document.getElementById('notifPanel'); if (!p) return;
+            const open = forceOpen ? true : p.classList.contains('hidden');
+            p.classList.toggle('hidden', !open);
+            if (open) renderNotifPanel();
+        }
+        function renderNotifPanel() {
+            const p = document.getElementById('notifPanel'); if (!p || p.classList.contains('hidden')) return;
+            const canAsk = 'Notification' in window && Notification.permission === 'default';
+            const items = notifItems.length ? notifItems.map(n => {
+                const when = new Date(n.created_at).toLocaleString('en-PH', { timeZone: 'Asia/Manila', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+                return `<button onclick="markNotifRead('${n.id}')" class="w-full text-left p-3 border-b border-slate-800 ${n.read_at ? 'opacity-60' : 'bg-brandCyan/5'}"><div class="flex items-start justify-between gap-2"><div class="text-xs font-extrabold ${n.read_at ? 'text-slate-300' : 'text-brandCyan'}">${n.read_at ? '' : '<span class="inline-block w-2 h-2 rounded-full bg-red-500 mr-1.5"></span>'}${fcEsc(n.title)}</div><div class="text-[10px] text-slate-500 shrink-0">${when}</div></div><div class="text-xs text-slate-300 mt-1.5 whitespace-pre-line leading-relaxed">${fcEsc(n.body)}</div></button>`;
+            }).join('') : '<div class="p-6 text-center text-xs text-slate-500">No notifications yet. You will see member reservations here for the days you are the assigned coach.</div>';
+            p.innerHTML = `<div class="flex items-center justify-between gap-2 p-3 border-b border-slate-800 sticky top-0 bg-brandCard"><div class="text-sm font-heading font-bold text-white"><i class="fa-solid fa-bell text-brandCyan"></i> Notifications</div><div class="flex gap-2"><button onclick="markAllNotifRead()" class="text-[11px] font-bold text-brandCyan">Mark all read</button><button onclick="clearNotifs()" class="text-[11px] font-bold text-slate-400">Clear</button></div></div>${canAsk ? '<button onclick="enablePhoneAlerts()" class="w-full p-2.5 text-[11px] font-bold text-amber-300 bg-amber-500/10 border-b border-slate-800">Turn on phone alerts (shows while the app is open or in the background)</button>' : ''}${items}`;
+        }
+        async function markNotifRead(id) {
+            await sb.from('notifications').update({ read_at: new Date().toISOString() }).eq('id', id).is('read_at', null);
+            loadNotifications();
+        }
+        async function markAllNotifRead() {
+            await sb.from('notifications').update({ read_at: new Date().toISOString() }).is('read_at', null);
+            loadNotifications();
+        }
+        async function clearNotifs() {
+            if (!confirm('Delete all your notifications?')) return;
+            await sb.from('notifications').delete().eq('user_id', notifUser);
+            loadNotifications();
+        }
+        function enablePhoneAlerts() { try { Notification.requestPermission().then(renderNotifPanel); } catch (e) {} }
+        document.addEventListener('click', () => { const p = document.getElementById('notifPanel'); if (p) p.classList.add('hidden'); });
 
         // ===== FORM CHECK: members upload videos, coaches write notes manually =====
         const FORM_LIFTS = ['Snatch', 'Clean & Jerk', 'Back Squat', 'Front Squat', 'Overhead Squat', 'Deadlift', 'Pull-ups', 'Other'];
