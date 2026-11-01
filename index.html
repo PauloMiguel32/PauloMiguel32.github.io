@@ -215,6 +215,7 @@
             <div id="homeWod"></div>
             <div id="homeEvents"></div>
             <div id="homeMembership" class="space-y-4"></div>
+            <div id="homeHours"></div>
             <div id="homeContact"></div>
         </section>
 
@@ -472,80 +473,20 @@
         <!-- PAGE: EVENTS / COMPS -->
         <section id="tab-events" class="hidden space-y-6">
             <div class="bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6 flex flex-wrap items-center justify-between gap-3">
-                <div>
-                    <h1 class="text-2xl sm:text-3xl font-heading font-bold text-white flex items-center gap-3">
-                        <i class="fa-solid fa-trophy text-brandCyan"></i> Events &amp; Comps
-                    </h1>
-                    <p class="text-slate-400 text-xs sm:text-sm mt-1">Upcoming events, community comps, and photo albums.</p>
-                </div>
-                <button id="evAddBtn" onclick="openEventForm()" class="hidden px-4 py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs transition">+ Add Event</button>
+                <div><h1 class="text-2xl sm:text-3xl font-heading font-bold text-white flex items-center gap-3"><i class="fa-solid fa-trophy text-brandCyan"></i> Events &amp; Comps</h1><p class="text-slate-400 text-xs sm:text-sm mt-1">Competitions, community days and photo albums.</p></div>
+                <button id="evAddBtn" onclick="openEventForm()" class="hidden px-4 py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs transition">+ Add event / comp</button>
             </div>
-
             <div id="eventsBody" class="space-y-6"></div>
-
-            <div class="rounded-3xl border border-slate-800 bg-slate-900/70 p-6 shadow-2xl shadow-black/30">
-                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <p class="text-xs font-bold uppercase tracking-[0.25em] text-brandCyan">Gallery</p>
-                        <h2 class="mt-2 text-3xl font-heading font-black uppercase text-white">Event Albums</h2>
-                    </div>
-                    <button id="eventsOpenAlbumModal" class="inline-flex items-center justify-center rounded-xl bg-brandCyan px-4 py-2.5 text-sm font-bold text-black transition hover:bg-brandCyanBright">
-                        <i class="fa-solid fa-plus mr-2"></i> Add Album
-                    </button>
-                </div>
-            </div>
-
-            <div id="eventsAlbumGrid" class="grid gap-6 md:grid-cols-2 xl:grid-cols-3"></div>
-
-            <div id="eventsAlbumDetail" class="hidden rounded-3xl border border-slate-800 bg-slate-900/70 p-6 shadow-2xl shadow-black/30">
-                <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <button id="eventsBackToAlbums" class="inline-flex items-center rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-200">
-                        <i class="fa-solid fa-arrow-left mr-2"></i> Back
-                    </button>
-                    <div class="flex items-center gap-3">
-                        <h3 id="eventsDetailTitle" class="text-2xl font-heading font-black uppercase text-white"></h3>
-                        <button id="eventsDeleteAlbumBtn" class="rounded-xl bg-red-600 px-3 py-2 text-sm font-bold text-white hover:bg-red-500">
-                            Delete Album
-                        </button>
-                    </div>
-                </div>
-
-                <div class="mb-5">
-                    <label for="eventsMediaInput" class="mb-2 block text-sm font-semibold text-slate-200">Add photos or videos</label>
-                    <input id="eventsMediaInput" type="file" accept="image/*,video/*" multiple class="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-slate-200">
-                </div>
-
-                <div id="eventsMediaGrid" class="grid gap-5 md:grid-cols-2 xl:grid-cols-3"></div>
-            </div>
         </section>
 
-        <div id="eventsAlbumModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 p-4">
-            <div class="w-full max-w-lg rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-2xl shadow-black/60">
-                <div class="mb-4 flex items-center justify-between">
-                    <h3 class="text-2xl font-heading font-black uppercase text-white">Create Album</h3>
-                    <button id="eventsCloseAlbumModal" class="text-xl text-slate-400 hover:text-white">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-
-                <div class="space-y-4">
-                    <div>
-                        <label for="eventsAlbumTitle" class="mb-2 block text-sm font-semibold text-slate-200">Title</label>
-                        <input id="eventsAlbumTitle" type="text" placeholder="e.g. Team Training 2025" class="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-slate-200 placeholder:text-slate-500">
-                    </div>
-
-                    <div>
-                        <label for="eventsAlbumCover" class="mb-2 block text-sm font-semibold text-slate-200">Cover Photo</label>
-                        <input id="eventsAlbumCover" type="file" accept="image/*" class="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-slate-200">
-                    </div>
-
-                    <div class="flex justify-end gap-3 pt-2">
-                        <button id="eventsCancelAlbum" class="rounded-xl border border-slate-600 bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-200">Cancel</button>
-                        <button id="eventsSaveAlbumBtn" class="rounded-xl bg-brandCyan px-4 py-2 text-sm font-bold text-black">Create Album</button>
-                    </div>
-                </div>
+        <!-- PAGE 5: ADMIN & HEAD COACH APPROVAL QUEUE -->
+        <section id="tab-admin" class="hidden space-y-6">
+            <div class="bg-brandCard p-6 rounded-3xl border border-slate-800">
+                <h1 class="text-2xl sm:text-3xl font-heading font-bold text-white flex items-center gap-3">
+                    <i class="fa-solid fa-user-gear text-brandCyan"></i> Head Coach Administration
+                </h1>
+                <p class="text-slate-400 text-xs sm:text-sm mt-1">Review pending account applications and manage corkboard roster permissions.</p>
             </div>
-        </div>
 
             <div id="adminContent" class="space-y-6"></div>
         </section>
@@ -2527,12 +2468,22 @@ function membershipParts() {
                         box.innerHTML = '<h2 class="font-heading font-bold text-lg text-white flex items-center gap-2"><i class="fa-solid fa-users text-brandCyan"></i> Our Coaches</h2>' + coaches;
         }
         function renderContact() {
-            const box = document.getElementById('homeContact'); if (!box) return;
-            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            const hours = days.map((n, i) => `<div class="flex justify-between gap-3"><span class="font-bold text-slate-200">${n}</span><span class="text-right">${DAY_PLAN[i] ? DAY_PLAN[i][2].map(k => SLOT_DEFS[k].time).join(' · ') : 'Rest day'}</span></div>`).join('');
+            const hbox = document.getElementById('homeHours'), box = document.getElementById('homeContact');
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], today = new Date().getDay();
+            const order = [1, 2, 3, 4, 5, 6, 0];
+            if (hbox) {
+                const rows = order.map(i => {
+                    const p = DAY_PLAN[i], isToday = i === today;
+                    const times = p ? p[2].map(k => `<span class="px-2.5 py-1 rounded-lg bg-slate-950/70 border border-slate-700 text-[11px] font-bold text-white whitespace-nowrap"><i class="fa-regular fa-clock ${SLOT_DEFS[k].color} mr-1"></i>${SLOT_DEFS[k].time}</span>`).join('') : '<span class="text-[11px] font-semibold text-slate-500 italic">Rest day - recover well 💤</span>';
+                    const tag = p ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${p[1]}">${p[0]}</span>` : '';
+                    return `<div class="p-3 rounded-2xl border ${isToday ? 'bg-brandCyan/10 border-brandCyan/60 shadow-lg shadow-brandCyan/10' : 'bg-slate-900/70 border-slate-800'} ${p ? '' : 'opacity-70'}"><div class="flex items-center justify-between gap-2 mb-2"><div class="flex items-center gap-2"><span class="text-sm font-heading font-bold ${isToday ? 'text-brandCyan' : 'text-white'}">${days[i]}</span>${isToday ? '<span class="px-2 py-0.5 rounded-full bg-brandCyan text-slate-950 text-[10px] font-extrabold uppercase tracking-wider">Today</span>' : ''}</div>${tag}</div><div class="flex flex-wrap gap-1.5">${times}</div></div>`;
+                }).join('');
+                hbox.innerHTML = `<div class="bg-gradient-to-br from-brandCard to-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-4 relative overflow-hidden"><div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-brandCyan/10 blur-2xl pointer-events-none"></div><div class="relative"><h2 class="font-heading font-bold text-lg text-white flex items-center gap-2"><i class="fa-solid fa-clock text-brandCyan"></i> Class Hours</h2><p class="text-xs text-slate-400 mt-0.5">Weekly schedule. Reserve your spot from the Schedule page.</p></div><div class="relative grid sm:grid-cols-2 gap-2.5">${rows}</div></div>`;
+            }
+            if (!box) return;
             const q = encodeURIComponent(CONTACT.mapsQuery), lnk = 'px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs font-bold';
-            const contact = `<div class="text-xs text-slate-400 space-y-1">${hours}</div><div class="flex flex-wrap gap-2 pt-2"><a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener" class="${lnk}"><i class="fa-solid fa-location-dot text-brandCyan"></i> Open in Maps</a><a href="https://www.google.com/maps/dir/?api=1&destination=${q}" target="_blank" rel="noopener" class="${lnk}">Directions</a>${CONTACT.phone ? `<a href="tel:${fcEsc(CONTACT.phone)}" class="${lnk}"><i class="fa-solid fa-phone text-brandCyan"></i> Call</a>` : ''}${CONTACT.facebook ? `<a href="${fcEsc(CONTACT.facebook)}" target="_blank" rel="noopener" class="${lnk}">Facebook</a>` : ''}${CONTACT.instagram ? `<a href="${fcEsc(CONTACT.instagram)}" target="_blank" rel="noopener" class="${lnk}">Instagram</a>` : ''}</div>`;
-            box.innerHTML = `<div class="bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-3"><h2 class="font-heading font-bold text-lg text-white flex items-center gap-2"><i class="fa-solid fa-location-dot text-brandCyan"></i> Find Us &amp; Hours</h2>${contact}</div>`;
+            const contact = `<div class="flex flex-wrap gap-2"><a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener" class="${lnk}"><i class="fa-solid fa-location-dot text-brandCyan"></i> Open in Maps</a><a href="https://www.google.com/maps/dir/?api=1&destination=${q}" target="_blank" rel="noopener" class="${lnk}">Directions</a>${CONTACT.phone ? `<a href="tel:${fcEsc(CONTACT.phone)}" class="${lnk}"><i class="fa-solid fa-phone text-brandCyan"></i> Call</a>` : ''}${CONTACT.facebook ? `<a href="${fcEsc(CONTACT.facebook)}" target="_blank" rel="noopener" class="${lnk}">Facebook</a>` : ''}${CONTACT.instagram ? `<a href="${fcEsc(CONTACT.instagram)}" target="_blank" rel="noopener" class="${lnk}">Instagram</a>` : ''}</div>`;
+            box.innerHTML = `<div class="bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-3"><h2 class="font-heading font-bold text-lg text-white flex items-center gap-2"><i class="fa-solid fa-location-dot text-brandCyan"></i> Find Us</h2>${contact}</div>`;
         }
 
         async function signWaiver() {
@@ -2608,13 +2559,13 @@ function membershipParts() {
         function evCard(e, cls) {
             const k = EV_KIND[e.kind] || EV_KIND.event, img = evUrl(e.photo_path), when = evWhen(e);
             return `<button onclick="openEvent('${e.id}')" class="${cls} text-left bg-brandCard border border-slate-800 rounded-3xl overflow-hidden hover:border-brandCyan/50 transition">
-                <div class="h-40 bg-gradient-to-br from-slate-800 to-slate-900 relative flex items-center justify-center text-5xl">${img ? `<img src="${fcEsc(img)}" loading="lazy" alt="${fcEsc(e.title)}" class="absolute inset-0 w-full h-full object-cover">` : k[2]}<span class="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold border ${k[1]}">${k[0]}</span>${when ? `<span class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/70 text-white">${when}</span>` : ''}</div>
+                <div class="${img ? '' : 'h-48 '}bg-gradient-to-br from-slate-800 to-slate-900 relative flex items-center justify-center text-5xl">${img ? `<img src="${fcEsc(img)}" loading="lazy" alt="${fcEsc(e.title)}" class="w-full h-auto max-h-[26rem] object-contain block">` : k[2]}<span class="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold border ${k[1]}">${k[0]}</span>${when ? `<span class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/70 text-white">${when}</span>` : ''}</div>
                 <div class="p-4 space-y-0.5"><div class="text-base font-bold text-white leading-tight">${fcEsc(e.title)}</div>${e.event_date ? `<div class="text-xs font-semibold text-brandCyan">${evDateText(e)}</div>` : ''}${e.location ? `<div class="text-xs text-slate-400"><i class="fa-solid fa-location-dot"></i> ${fcEsc(e.location)}</div>` : ''}</div></button>`;
         }
-        const ROUL_CARD = 'snap-center shrink-0 w-[78%] sm:w-[46%] lg:w-[34%]';
+        const ROUL_CARD = 'snap-center shrink-0 w-full';
         function rouletteHtml(id, cards) {
             const arrow = (side, dir, icon) => `<button onclick="rouletteGo('${id}', ${dir})" class="absolute ${side} top-[42%] z-10 w-9 h-9 rounded-full bg-black/60 hover:bg-black/80 text-white"><i class="fa-solid fa-chevron-${icon}"></i></button>`;
-            return `<div class="relative">${arrow('left-0', -1, 'left')}${arrow('right-0', 1, 'right')}<div id="${id}" class="relative flex gap-3 overflow-x-auto snap-x snap-mandatory py-3 px-[11%] sm:px-[27%] lg:px-[33%]" style="scrollbar-width:none">${cards}</div><div id="${id}Dots" class="flex justify-center gap-1.5"></div></div>`;
+            return `<div class="relative">${arrow('left-0', -1, 'left')}${arrow('right-0', 1, 'right')}<div id="${id}" class="relative flex gap-3 overflow-x-auto snap-x snap-mandatory py-3 px-[12%] sm:px-[22%] lg:px-[28%]" style="scrollbar-width:none">${cards}</div><div id="${id}Dots" class="flex justify-center gap-1.5"></div></div>`;
         }
         function rouletteGo(id, dir) { const el = document.getElementById(id); if (!el || !el.children[0]) return; el.scrollBy({ left: dir * (el.children[0].offsetWidth + 12), behavior: 'smooth' }); }
         function rouletteUpdate(el, id) {
@@ -2680,12 +2631,12 @@ function membershipParts() {
         function closeAlbumModal() { document.getElementById('albumModal').classList.add('hidden'); }
         function openAlbum(id) {
             const a = ALBUMS.find(x => x.id === id); if (!a) return;
-            const coach = isCoachRole(), canAdd = canPost(), myId = currentProfile ? currentProfile.id : null, manage = coach || (!!myId && a.created_by === myId), media = albMedia(id), ghost = 'px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs font-bold';
+            const coach = isCoachRole(), canAdd = canPost(), myId = currentProfile ? currentProfile.id : null, manage = canAdd, media = albMedia(id), ghost = 'px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs font-bold';
             document.getElementById('albumModal').classList.remove('hidden');
             document.getElementById('albumModalBody').innerHTML = `<div class="p-5 sm:p-6 space-y-4">
                 <div class="flex items-start justify-between gap-3"><div><h3 class="text-2xl font-heading font-bold text-white leading-tight">${fcEsc(a.title)}</h3>${a.description ? `<p class="text-sm text-slate-300 mt-1 whitespace-pre-wrap">${fcEsc(a.description)}</p>` : ''}<div class="text-[11px] text-slate-500 mt-1">${media.length} item${media.length === 1 ? '' : 's'}</div></div><button onclick="closeAlbumModal()" class="w-9 h-9 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 shrink-0"><i class="fa-solid fa-xmark"></i></button></div>
                 ${canAdd ? `<div class="flex flex-wrap items-center gap-2"><button onclick="document.getElementById('albFile').click()" class="px-4 py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs"><i class="fa-solid fa-images"></i> Add photos / videos</button>${manage ? `<button onclick="openAlbumForm('${a.id}')" class="${ghost}">Rename</button><button onclick="deleteAlbum('${a.id}')" class="${ghost} !text-red-400">Delete album</button>` : ''}<input type="file" id="albFile" accept="image/*,video/*" multiple class="hidden" onchange="uploadAlbumMedia(this.files, '${a.id}'); this.value=''"><span id="albUpMsg" class="text-[11px] text-slate-400"></span></div><p class="text-[11px] text-slate-500">Any phone video works (MP4, MOV and more). Videos over 45 MB are compressed automatically; keep the screen open while that happens. Photos are saved in high quality. Please only share pictures you are happy for the whole gym to see.</p>` : ''}
-                ${media.length ? `<div class="grid grid-cols-2 sm:grid-cols-3 gap-2">${media.map((m, i) => `<div class="relative aspect-square bg-slate-900 rounded-lg overflow-hidden"><button onclick="openLightbox('${a.id}', ${i})" class="absolute inset-0">${mediaThumb(m, 'w-full h-full object-cover')}${m.kind === 'video' ? '<span class="absolute inset-0 flex items-center justify-center text-white/90 text-2xl"><i class="fa-solid fa-circle-play"></i></span>' : ''}</button>${(manage || (!!myId && m.owner === myId)) ? `<button onclick="deleteAlbumMedia('${m.id}', '${fcEsc(m.path)}', '${a.id}')" class="absolute top-1 right-1 w-6 h-6 rounded-md bg-black/70 text-red-400 text-[10px]"><i class="fa-solid fa-trash"></i></button>` : ''}</div>`).join('')}</div>` : '<p class="text-xs text-slate-500 italic">This album is empty.</p>'}
+                ${media.length ? `<div class="grid grid-cols-2 sm:grid-cols-3 gap-2">${media.map((m, i) => `<div class="relative aspect-square bg-slate-900 rounded-lg overflow-hidden"><button onclick="openLightbox('${a.id}', ${i})" class="absolute inset-0">${mediaThumb(m, 'w-full h-full object-cover')}${m.kind === 'video' ? '<span class="absolute inset-0 flex items-center justify-center text-white/90 text-2xl"><i class="fa-solid fa-circle-play"></i></span>' : ''}</button>${manage ? `<button onclick="deleteAlbumMedia('${m.id}', '${fcEsc(m.path)}', '${a.id}')" class="absolute top-1 right-1 w-6 h-6 rounded-md bg-black/70 text-red-400 text-[10px]"><i class="fa-solid fa-trash"></i></button>` : ''}</div>`).join('')}</div>` : '<p class="text-xs text-slate-500 italic">This album is empty.</p>'}
             </div>`;
         }
         function openAlbumForm(id) {
@@ -2846,7 +2797,7 @@ function membershipParts() {
             const head = activeRole === 'Head Coach', k = EV_KIND[e.kind] || EV_KIND.event, img = evUrl(e.photo_path);
             const ghost = 'px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs font-bold';
             document.getElementById('eventModal').classList.remove('hidden');
-            document.getElementById('eventModalBody').innerHTML = `${img ? `<img src="${fcEsc(img)}" alt="" class="w-full max-h-72 object-cover">` : ''}
+            document.getElementById('eventModalBody').innerHTML = `${img ? `<img src="${fcEsc(img)}" alt="" class="w-full max-h-[75vh] object-contain bg-black">` : ''}
                 <div class="p-5 sm:p-6 space-y-4">
                     <div class="flex items-start justify-between gap-3"><div class="space-y-1"><span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold border ${k[1]}">${k[0]}</span><h3 class="text-2xl font-heading font-bold text-white leading-tight">${fcEsc(e.title)}</h3>${e.event_date ? `<div class="text-sm font-semibold text-brandCyan">${evDateText(e)}</div>` : ''}${e.location ? `<div class="text-xs text-slate-400"><i class="fa-solid fa-location-dot"></i> ${fcEsc(e.location)}</div>` : ''}</div><button onclick="closeEventModal()" class="w-9 h-9 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 shrink-0"><i class="fa-solid fa-xmark"></i></button></div>
                     ${e.details ? `<p class="text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">${fcEsc(e.details)}</p>` : ''}
