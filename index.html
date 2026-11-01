@@ -470,11 +470,83 @@
         </section>
 
         <!-- PAGE: EVENTS / COMPS -->
-        <section id="tab-events" class="hidden space-y-6">
-            <div class="bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6 flex flex-wrap items-center justify-between gap-3">
-                <div><h1 class="text-2xl sm:text-3xl font-heading font-bold text-white flex items-center gap-3"><i class="fa-solid fa-trophy text-brandCyan"></i> Events &amp; Comps</h1><p class="text-slate-400 text-xs sm:text-sm mt-1">Competitions, community days and photo albums.</p></div>
-                <button id="evAddBtn" onclick="openEventForm()" class="hidden px-4 py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs transition">+ Add event / comp</button>
-            </div>
+        <!-- PAGE: EVENTS / COMPS -->
+<section id="tab-events" class="hidden space-y-6">
+    <div class="bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6 flex flex-wrap items-center justify-between gap-3">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-heading font-bold text-white flex items-center gap-3">
+                <i class="fa-solid fa-trophy text-brandCyan"></i> Events &amp; Comps
+            </h1>
+            <p class="text-slate-400 text-xs sm:text-sm mt-1">Upcoming events, community comps, and photo albums.</p>
+        </div>
+        <button id="evAddBtn" onclick="openEventForm()" class="hidden px-4 py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs transition">+ Add Event</button>
+    </div>
+
+    <div id="eventsBody" class="space-y-6"></div>
+
+    <div class="rounded-3xl border border-slate-800 bg-slate-900/70 p-6 shadow-2xl shadow-black/30">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-[0.25em] text-brandCyan">Gallery</p>
+                <h2 class="mt-2 text-3xl font-heading font-black uppercase text-white">Event Albums</h2>
+            </div>
+            <button id="eventsOpenAlbumModal" class="inline-flex items-center justify-center rounded-xl bg-brandCyan px-4 py-2.5 text-sm font-bold text-black transition hover:bg-brandCyanBright">
+                <i class="fa-solid fa-plus mr-2"></i> Add Album
+            </button>
+        </div>
+    </div>
+
+    <div id="eventsAlbumGrid" class="grid gap-6 md:grid-cols-2 xl:grid-cols-3"></div>
+
+    <div id="eventsAlbumDetail" class="hidden rounded-3xl border border-slate-800 bg-slate-900/70 p-6 shadow-2xl shadow-black/30">
+        <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <button id="eventsBackToAlbums" class="inline-flex items-center rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-200">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Back
+            </button>
+            <div class="flex items-center gap-3">
+                <h3 id="eventsDetailTitle" class="text-2xl font-heading font-black uppercase text-white"></h3>
+                <button id="eventsDeleteAlbumBtn" class="rounded-xl bg-red-600 px-3 py-2 text-sm font-bold text-white hover:bg-red-500">
+                    Delete Album
+                </button>
+            </div>
+        </div>
+
+        <div class="mb-5">
+            <label for="eventsMediaInput" class="mb-2 block text-sm font-semibold text-slate-200">Add photos or videos</label>
+            <input id="eventsMediaInput" type="file" accept="image/*,video/*" multiple class="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-slate-200">
+        </div>
+
+        <div id="eventsMediaGrid" class="grid gap-5 md:grid-cols-2 xl:grid-cols-3"></div>
+    </div>
+</section>
+
+<div id="eventsAlbumModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 p-4">
+    <div class="w-full max-w-lg rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-2xl shadow-black/60">
+        <div class="mb-4 flex items-center justify-between">
+            <h3 class="text-2xl font-heading font-black uppercase text-white">Create Album</h3>
+            <button id="eventsCloseAlbumModal" class="text-xl text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <label for="eventsAlbumTitle" class="mb-2 block text-sm font-semibold text-slate-200">Title</label>
+                <input id="eventsAlbumTitle" type="text" placeholder="e.g. Team Training 2025" class="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-slate-200 placeholder:text-slate-400">
+            </div>
+
+            <div>
+                <label for="eventsAlbumCover" class="mb-2 block text-sm font-semibold text-slate-200">Cover Photo</label>
+                <input id="eventsAlbumCover" type="file" accept="image/*" class="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-slate-200">
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <button id="eventsCancelAlbum" class="rounded-xl border border-slate-600 bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-200">Cancel</button>
+                <button id="eventsSaveAlbumBtn" class="rounded-xl bg-brandCyan px-4 py-2 text-sm font-bold text-black">Create Album</button>
+            </div>
+        </div>
+    </div>
+</div>
             <div id="eventsBody" class="space-y-6"></div>
         </section>
 
@@ -3009,5 +3081,256 @@ function membershipParts() {
             window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
         }
     </script>
+
+    <script>
+(function () {
+    const STORAGE_KEY = 'crossfit_events_albums';
+
+    const albumGrid = document.getElementById('eventsAlbumGrid');
+    const albumDetail = document.getElementById('eventsAlbumDetail');
+    const detailTitle = document.getElementById('eventsDetailTitle');
+    const mediaGrid = document.getElementById('eventsMediaGrid');
+    const albumModal = document.getElementById('eventsAlbumModal');
+    const albumTitleInput = document.getElementById('eventsAlbumTitle');
+    const albumCoverInput = document.getElementById('eventsAlbumCover');
+    const mediaInput = document.getElementById('eventsMediaInput');
+
+    function readAlbums() {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            return saved ? JSON.parse(saved) : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function saveAlbums(albums) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(albums));
+    }
+
+    function fileToDataURL(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    let selectedAlbumId = null;
+
+    function renderAlbums() {
+        if (!albumGrid) return;
+        const albums = readAlbums();
+
+        albumGrid.innerHTML = '';
+
+        if (!albums.length) {
+            albumGrid.innerHTML = `
+                <div class="col-span-full rounded-2xl border border-dashed border-slate-700 bg-slate-950/60 p-8 text-center text-slate-300">
+                    No albums yet. Create your first album.
+                </div>
+            `;
+            return;
+        }
+
+        albums.forEach(album => {
+            const card = document.createElement('div');
+            card.className = 'rounded-3xl overflow-hidden border border-slate-700 bg-slate-950/80 shadow-xl shadow-black/30';
+
+            const cover = album.cover
+                ? `<img src="${album.cover}" alt="${album.title}" class="h-52 w-full object-cover">`
+                : `<div class="h-52 flex items-center justify-center bg-slate-800 text-slate-400 font-bold uppercase tracking-wider">No Cover</div>`;
+
+            card.innerHTML = `
+                ${cover}
+                <div class="p-4">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <h4 class="text-xl font-bold text-white">${album.title}</h4>
+                            <p class="text-sm text-slate-400">${album.items.length} items</p>
+                        </div>
+                        <button data-open-album="${album.id}" class="rounded-lg bg-slate-800 px-3 py-2 text-sm font-semibold text-slate-100 hover:bg-slate-700">
+                            Open
+                        </button>
+                    </div>
+                    <div class="mt-4 flex justify-between gap-2">
+                        <button data-delete-album="${album.id}" class="w-full rounded-lg border border-red-600 bg-red-950/30 px-3 py-2 text-sm font-bold text-red-300">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            albumGrid.appendChild(card);
+        });
+
+        document.querySelectorAll('[data-open-album]').forEach(button => {
+            button.addEventListener('click', () => {
+                selectedAlbumId = Number(button.dataset.openAlbum);
+                renderAlbumDetail();
+            });
+        });
+
+        document.querySelectorAll('[data-delete-album]').forEach(button => {
+            button.addEventListener('click', () => {
+                const id = Number(button.dataset.deleteAlbum);
+                deleteAlbum(id);
+            });
+        });
+    }
+
+    function renderAlbumDetail() {
+        const albums = readAlbums();
+        const album = albums.find(item => item.id === selectedAlbumId);
+
+        if (!album) {
+            albumDetail.classList.add('hidden');
+            return;
+        }
+
+        detailTitle.textContent = album.title;
+        albumDetail.classList.remove('hidden');
+
+        mediaGrid.innerHTML = '';
+
+        if (!album.items.length) {
+            mediaGrid.innerHTML = `
+                <div class="col-span-full rounded-2xl border border-dashed border-slate-700 bg-slate-950/60 p-6 text-center text-slate-300">
+                    No media in this album yet.
+                </div>
+            `;
+            return;
+        }
+
+        album.items.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'relative overflow-hidden rounded-2xl border border-slate-700 bg-slate-950/80';
+
+            const media = item.type === 'video'
+                ? `<video src="${item.src}" controls class="h-52 w-full object-cover"></video>`
+                : `<img src="${item.src}" alt="${item.name}" class="h-52 w-full object-cover">`;
+
+            card.innerHTML = `
+                ${media}
+                <button data-delete-media="${item.id}" class="absolute right-2 top-2 rounded-lg bg-red-600 px-2 py-1 text-xs font-bold text-white">
+                    Delete
+                </button>
+            `;
+
+            mediaGrid.appendChild(card);
+        });
+
+        document.querySelectorAll('[data-delete-media]').forEach(button => {
+            button.addEventListener('click', () => {
+                const itemId = Number(button.dataset.deleteMedia);
+                deleteAlbumItem(selectedAlbumId, itemId);
+            });
+        });
+    }
+
+    function closeAlbumDetail() {
+        selectedAlbumId = null;
+        albumDetail.classList.add('hidden');
+    }
+
+    function deleteAlbum(albumId) {
+        const albums = readAlbums().filter(item => item.id !== Number(albumId));
+        saveAlbums(albums);
+        renderAlbums();
+
+        if (selectedAlbumId === Number(albumId)) {
+            closeAlbumDetail();
+        }
+    }
+
+    function deleteAlbumItem(albumId, itemId) {
+        const albums = readAlbums();
+        const album = albums.find(item => item.id === Number(albumId));
+        if (!album) return;
+
+        album.items = album.items.filter(item => item.id !== Number(itemId));
+        saveAlbums(albums);
+        renderAlbums();
+        renderAlbumDetail();
+    }
+
+    async function createAlbum() {
+        const title = albumTitleInput.value.trim();
+        const coverFile = albumCoverInput.files[0];
+
+        if (!title) {
+            alert('Please enter a title.');
+            return;
+        }
+
+        let coverData = '';
+
+        if (coverFile) {
+            coverData = await fileToDataURL(coverFile);
+        }
+
+        const albums = readAlbums();
+        albums.unshift({
+            id: Date.now(),
+            title,
+            cover: coverData,
+            items: []
+        });
+
+        saveAlbums(albums);
+        renderAlbums();
+        closeAlbumModal();
+    }
+
+    async function handleMediaUpload(event) {
+        const files = Array.from(event.target.files);
+        if (!files.length || !selectedAlbumId) return;
+
+        const albums = readAlbums();
+        const album = albums.find(item => item.id === selectedAlbumId);
+        if (!album) return;
+
+        for (const file of files) {
+            const dataUrl = await fileToDataURL(file);
+            album.items.push({
+                id: Date.now() + Math.random(),
+                name: file.name,
+                type: file.type.startsWith('video/') ? 'video' : 'image',
+                src: dataUrl
+            });
+        }
+
+        saveAlbums(albums);
+        renderAlbums();
+        renderAlbumDetail();
+        event.target.value = '';
+    }
+
+    function openAlbumModal() {
+        albumModal.classList.remove('hidden');
+        albumModal.classList.add('flex');
+    }
+
+    function closeAlbumModal() {
+        albumModal.classList.add('hidden');
+        albumModal.classList.remove('flex');
+        albumTitleInput.value = '';
+        albumCoverInput.value = '';
+    }
+
+    document.getElementById('eventsOpenAlbumModal').addEventListener('click', openAlbumModal);
+    document.getElementById('eventsCloseAlbumModal').addEventListener('click', closeAlbumModal);
+    document.getElementById('eventsCancelAlbum').addEventListener('click', closeAlbumModal);
+    document.getElementById('eventsSaveAlbumBtn').addEventListener('click', createAlbum);
+    document.getElementById('eventsMediaInput').addEventListener('change', handleMediaUpload);
+    document.getElementById('eventsBackToAlbums').addEventListener('click', closeAlbumDetail);
+    document.getElementById('eventsDeleteAlbumBtn').addEventListener('click', () => {
+        if (selectedAlbumId !== null) deleteAlbum(selectedAlbumId);
+    });
+
+    renderAlbums();
+})();
+</script>
 </body>
 </html>
