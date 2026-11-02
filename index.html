@@ -780,6 +780,7 @@
                 <button onclick="closeInstallModal()" class="w-8 h-8 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 text-sm">&times;</button>
             </div>
             <div class="space-y-3 text-xs text-slate-300">
+                <div id="installWarn" class="hidden p-3 rounded-xl bg-amber-500/10 border border-amber-500/40 text-amber-300 font-semibold"></div>
                 <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
                     <div class="font-bold text-brandCyan mb-1">iPhone (Safari)</div>
                     <ol class="list-decimal list-inside space-y-0.5">
@@ -872,6 +873,14 @@
                 try { await deferredInstallPrompt.userChoice; } catch (e) {}
                 deferredInstallPrompt = null;
                 return;
+            }
+            const ua = navigator.userAgent || '', warn = document.getElementById('installWarn');
+            if (warn) {
+                const inApp = /FBAN|FBAV|FB_IAB|Messenger|Instagram|Viber|Line\/|MicroMessenger|Snapchat|Twitter/i.test(ua);
+                const iosOther = /iPhone|iPad|iPod/i.test(ua) && /CriOS|FxiOS|EdgiOS|OPiOS/i.test(ua);
+                warn.innerText = inApp ? 'You opened this inside another app (Facebook, Messenger, Viber...). Tap the menu (...) and choose "Open in browser" (Safari or Chrome), then install from there.'
+                    : iosOther ? 'On iPhone, installing works best from Safari. Open this same link in Safari, then follow the iPhone steps below.' : '';
+                warn.classList.toggle('hidden', !warn.innerText);
             }
             document.getElementById('installModal').classList.remove('hidden');
         }
