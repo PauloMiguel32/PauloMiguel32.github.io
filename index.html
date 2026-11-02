@@ -1299,16 +1299,35 @@
         function setSideLeds(tab) {
             const sd = document.getElementById('ledSide'), base = LED_SETS[tab] || LED_SETS.home; if (!sd) return;
             const set = base.concat(base.slice(0, 2));
-            const pos = [
-                'left:4%;top:6%;width:120px;height:120px;transform:rotate(-12deg)',
-                'right:4%;top:14%;width:130px;height:130px;transform:rotate(10deg)',
-                'left:38%;top:30%;width:100px;height:100px;transform:rotate(6deg)',
-                'left:5%;top:42%;width:120px;height:120px;transform:rotate(9deg)',
-                'right:5%;top:52%;width:130px;height:130px;transform:rotate(-9deg)',
-                'left:30%;top:68%;width:110px;height:110px;transform:rotate(-6deg)',
-                'right:6%;top:80%;width:120px;height:120px;transform:rotate(12deg)',
-                'left:5%;bottom:4%;width:130px;height:130px;transform:rotate(14deg)'
-            ];
+            const LAYOUTS = [[
+                'left:min(8%,calc(100% - 135px));top:5%;width:110px;height:110px;transform:rotate(-12deg)',
+                'left:min(62%,calc(100% - 135px));top:9%;width:125px;height:125px;transform:rotate(9deg)',
+                'left:min(34%,calc(100% - 135px));top:21%;width:95px;height:95px;transform:rotate(-6deg)',
+                'right:5%;top:30%;width:115px;height:115px;transform:rotate(13deg)',
+                'left:min(6%,calc(100% - 135px));top:36%;width:125px;height:125px;transform:rotate(8deg)',
+                'left:min(48%,calc(100% - 135px));top:48%;width:105px;height:105px;transform:rotate(-14deg)',
+                'right:18%;top:62%;width:120px;height:120px;transform:rotate(-8deg)',
+                'left:min(20%,calc(100% - 135px));top:74%;width:115px;height:115px;transform:rotate(11deg)'
+            ],[
+                'left:min(55%,calc(100% - 135px));top:4%;width:110px;height:110px;transform:rotate(7deg)',
+                'left:min(6%,calc(100% - 135px));top:12%;width:120px;height:120px;transform:rotate(-10deg)',
+                'right:4%;top:24%;width:100px;height:100px;transform:rotate(12deg)',
+                'left:min(28%,calc(100% - 135px));top:34%;width:125px;height:125px;transform:rotate(-5deg)',
+                'left:min(70%,calc(100% - 135px));top:44%;width:110px;height:110px;transform:rotate(9deg)',
+                'left:min(4%,calc(100% - 135px));top:56%;width:105px;height:105px;transform:rotate(14deg)',
+                'left:min(40%,calc(100% - 135px));top:70%;width:120px;height:120px;transform:rotate(-12deg)',
+                'right:6%;top:84%;width:115px;height:115px;transform:rotate(6deg)'
+            ],[
+                'left:min(22%,calc(100% - 135px));top:6%;width:105px;height:105px;transform:rotate(-9deg)',
+                'right:6%;top:8%;width:120px;height:120px;transform:rotate(11deg)',
+                'left:min(3%,calc(100% - 135px));top:25%;width:115px;height:115px;transform:rotate(6deg)',
+                'left:min(52%,calc(100% - 135px));top:27%;width:120px;height:120px;transform:rotate(-13deg)',
+                'right:12%;top:46%;width:100px;height:100px;transform:rotate(8deg)',
+                'left:min(25%,calc(100% - 135px));top:52%;width:110px;height:110px;transform:rotate(-7deg)',
+                'left:min(68%,calc(100% - 135px));top:70%;width:125px;height:125px;transform:rotate(12deg)',
+                'left:min(6%,calc(100% - 135px));top:80%;width:120px;height:120px;transform:rotate(-5deg)'
+            ]];
+            const pos = LAYOUTS[Math.max(0, Object.keys(LED_SETS).indexOf(tab)) % LAYOUTS.length];
             sd.innerHTML = set.map((k, i) => `<svg viewBox="0 0 64 64" class="led-ico" style="${pos[i]}">${LED_SVG[k]}</svg>`).join('');
         }
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ledInit); else ledInit();
