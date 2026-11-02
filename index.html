@@ -42,7 +42,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        :root { --c-dark: 8 10 15; --c-card: 13 16 23; --c-cyan: 0 168 255; --c-cyan-b: 0 204 255; --c-cyan-d: 0 119 182; }
+        :root { --c-dark: 8 10 15; --c-card: 13 16 23; --c-cyan: 0 168 255; --c-cyan-b: 0 204 255; --c-cyan-d: 0 119 182; --c-led: 41 185 238; }
+
+        /* ---- LED / neon equipment lights ---- */
+        main { position: relative; z-index: 1; }
+        .led-strip { display:flex; align-items:center; justify-content:space-between; gap:6px; padding:10px 14px; border-radius:18px;
+            border:1px solid rgb(var(--c-led) / .28); background:linear-gradient(180deg, rgb(var(--c-led) / .07), rgb(var(--c-led) / .02));
+            box-shadow: inset 0 0 18px rgb(var(--c-led) / .08), 0 0 18px rgb(var(--c-led) / .10); overflow:hidden; }
+        .led-ico { width:38px; height:38px; flex:0 0 auto; fill:none; stroke:rgb(var(--c-led)); stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round;
+            filter: drop-shadow(0 0 2px rgb(var(--c-led))) drop-shadow(0 0 8px rgb(var(--c-led) / .85)); animation: ledPulse 3.4s ease-in-out infinite; }
+        @media (min-width:640px) { .led-ico { width:52px; height:52px; } .led-strip { padding:12px 28px; } }
+        .led-ico:nth-child(2) { animation-delay:.5s; } .led-ico:nth-child(3) { animation-delay:1.1s; } .led-ico:nth-child(4) { animation-delay:1.7s; }
+        .led-ico:nth-child(5) { animation-delay:2.2s; } .led-ico:nth-child(6) { animation-delay:2.8s; }
+        .led-ico:nth-child(4n+3) { animation-name: ledFlicker; animation-duration: 7s; }
+        @keyframes ledPulse { 0%,100% { opacity:.78; } 50% { opacity:1; } }
+        @keyframes ledFlicker { 0%,100% { opacity:1; } 40% { opacity:.95; } 42% { opacity:.35; } 44% { opacity:1; } 46% { opacity:.55; } 48% { opacity:1; } }
+        #ledSide { position:fixed; inset:0; pointer-events:none; z-index:0; display:none; overflow:hidden; }
+        @media (min-width:1360px) { #ledSide { display:block; } }
+        #ledSide svg { position:absolute; width:190px; height:190px; opacity:.16; stroke-width:1.6; animation: ledPulse 5s ease-in-out infinite; }
+        @media (prefers-reduced-motion: reduce) { .led-ico, #ledSide svg { animation:none !important; } }
         .corkboard-bg {
             background-color: #cb9b61;
             background-image: 
@@ -131,7 +149,7 @@
         function applyTheme(t) {
             t = t || getTheme(); var b = BG_THEMES[t.bg], a = ACCENTS[t.accent], r = document.documentElement.style;
             r.setProperty('--c-dark', b[1]); r.setProperty('--c-card', b[2]);
-            r.setProperty('--c-cyan', a[1]); r.setProperty('--c-cyan-b', a[2]); r.setProperty('--c-cyan-d', a[3]);
+            r.setProperty('--c-cyan', a[1]); r.setProperty('--c-cyan-b', a[2]); r.setProperty('--c-cyan-d', a[3]); r.setProperty('--c-led', t.accent === 'cyan' ? '41 185 238' : a[1]);
             var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', 'rgb(' + b[1].split(' ').join(',') + ')');
         }
         applyTheme();
@@ -1253,6 +1271,50 @@
             refreshPendingBadge();
         }
 
+        // ===== LED equipment lights =====
+        const LED_SVG = {
+            barbell: '<path d="M2 32h6M22 32h20M56 32h6"/><rect x="8" y="20" width="6" height="24" rx="2"/><rect x="15" y="14" width="7" height="36" rx="2"/><rect x="42" y="14" width="7" height="36" rx="2"/><rect x="50" y="20" width="6" height="24" rx="2"/>',
+            kettlebell: '<path d="M22 26v-8a10 10 0 0 1 20 0v8"/><circle cx="32" cy="40" r="16"/><path d="M24 57h16"/>',
+            dumbbell: '<rect x="3" y="22" width="8" height="20" rx="2"/><rect x="11" y="16" width="8" height="32" rx="2"/><path d="M19 32h26"/><rect x="45" y="16" width="8" height="32" rx="2"/><rect x="53" y="22" width="8" height="20" rx="2"/>',
+            plate: '<circle cx="32" cy="32" r="26"/><circle cx="32" cy="32" r="19"/><circle cx="32" cy="32" r="5"/>',
+            pullup: '<path d="M12 58V10M52 58V10M8 12h48M6 58h12M46 58h12M26 12v12M38 12v12"/>',
+            rope: '<rect x="8" y="6" width="8" height="18" rx="3"/><rect x="48" y="6" width="8" height="18" rx="3"/><path d="M12 24C4 72 60 72 52 24"/>',
+            box: '<path d="M8 26h40v30H8zM8 26l12-12h40L48 26M48 26l12-12v30L48 56"/><rect x="18" y="34" width="20" height="6" rx="3"/>',
+            wallball: '<circle cx="32" cy="32" r="24"/><path d="M32 8c-9 9-9 39 0 48M32 8c9 9 9 39 0 48M9 24c14 9 32 9 46 0M9 40c14-9 32-9 46 0"/>',
+            rings: '<path d="M10 6h44M18 6v24M46 6v24"/><circle cx="18" cy="42" r="12"/><circle cx="46" cy="42" r="12"/>',
+            rack: '<path d="M14 58V8M50 58V8M14 26h8v-4M50 26h-8v-4M8 22h48M8 58h12M44 58h12"/><rect x="3" y="14" width="5" height="16" rx="1.5"/><rect x="56" y="14" width="5" height="16" rx="1.5"/>',
+            battle: '<path d="M4 22q6-12 12 0t12 0t12 0t12 0t12 0M4 42q6 12 12 0t12 0t12 0t12 0t12 0"/><circle cx="6" cy="32" r="4"/>'
+        };
+        const LED_SETS = {
+            home: ['barbell', 'kettlebell', 'plate', 'pullup', 'rope', 'dumbbell'],
+            membersboard: ['dumbbell', 'rings', 'kettlebell', 'barbell', 'wallball', 'plate'],
+            schedule: ['rack', 'barbell', 'box', 'rope', 'kettlebell', 'dumbbell'],
+            formcheck: ['barbell', 'pullup', 'rack', 'rings', 'plate', 'kettlebell'],
+            timer: ['kettlebell', 'rope', 'battle', 'box', 'plate', 'wallball'],
+            prs: ['barbell', 'plate', 'dumbbell', 'rack', 'kettlebell', 'pullup'],
+            events: ['wallball', 'box', 'pullup', 'battle', 'rings', 'barbell'],
+            admin: ['rack', 'plate', 'kettlebell', 'dumbbell', 'barbell', 'pullup']
+        };
+        const ledIcon = k => `<svg class="led-ico" viewBox="0 0 64 64" aria-hidden="true">${LED_SVG[k]}</svg>`;
+        function ledInit() {
+            Object.keys(LED_SETS).forEach(tab => {
+                const sec = document.getElementById('tab-' + tab);
+                if (!sec || sec.querySelector(':scope > .led-strip')) return;
+                const d = document.createElement('div');
+                d.className = 'led-strip'; d.setAttribute('aria-hidden', 'true');
+                d.innerHTML = LED_SETS[tab].map(ledIcon).join('');
+                sec.insertBefore(d, sec.firstChild);
+            });
+            if (!document.getElementById('ledSide')) { const sd = document.createElement('div'); sd.id = 'ledSide'; sd.setAttribute('aria-hidden', 'true'); document.body.insertBefore(sd, document.body.firstChild); }
+            setSideLeds('home');
+        }
+        function setSideLeds(tab) {
+            const sd = document.getElementById('ledSide'), set = LED_SETS[tab] || LED_SETS.home; if (!sd) return;
+            const pos = ['left:-40px;top:140px;transform:rotate(-14deg)', 'right:-40px;top:300px;transform:rotate(12deg)', 'left:-30px;bottom:90px;transform:rotate(10deg)'];
+            sd.innerHTML = [set[0], set[2], set[4]].map((k, i) => `<svg viewBox="0 0 64 64" class="led-ico" style="${pos[i]}">${LED_SVG[k]}</svg>`).join('');
+        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ledInit); else ledInit();
+
         function switchTab(tabName) {
             if (tabName === 'admin' && activeRole !== 'Head Coach') tabName = 'home';
             ['home', 'membersboard', 'schedule', 'formcheck', 'timer', 'prs', 'events', 'admin'].forEach(tab => {
@@ -1263,6 +1325,7 @@
                 }
             });
             window.scrollTo(0, 0);
+            setSideLeds(tabName);
             if (sb) {
                 if (tabName === 'membersboard') renderMembersBoard();
                 if (tabName === 'formcheck') renderFormChecks();
