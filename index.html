@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>CrossFit Cainta - East Ortigas</title>
-    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#080a0f">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -900,17 +900,17 @@
             try {
                 const link = document.querySelector('link[rel="manifest"]'); mUrl = link ? link.href : '';
                 const r = await fetch(mUrl, { cache: 'no-store' });
-                add(r.ok, 'manifest.webmanifest loads (status ' + r.status + ')', 'Upload manifest.webmanifest to Netlify (same folder as index.html).');
-                if (r.ok) { try { man = await r.json(); add(true, 'Manifest is valid JSON'); } catch (e) { add(false, 'Manifest is not valid JSON', 'Re-upload manifest.webmanifest from the zip.'); } }
-            } catch (e) { add(false, 'manifest.webmanifest could not be fetched', 'Upload manifest.webmanifest to Netlify.'); }
+                add(r.ok, 'manifest.json loads (status ' + r.status + ')', 'Upload manifest.json to your GitHub repo (same folder as index.html).');
+                if (r.ok) { try { man = await r.json(); add(true, 'Manifest is valid JSON'); } catch (e) { add(false, 'Manifest is not valid JSON', 'Re-upload manifest.json from the zip.'); } }
+            } catch (e) { add(false, 'manifest.json could not be fetched', 'Upload manifest.json to your GitHub repo.'); }
             if (man) {
-                add(!!(man.name || man.short_name) && !!man.start_url && /standalone|fullscreen|minimal-ui/.test(man.display || ''), 'Manifest has name, start_url and display', 'Re-upload manifest.webmanifest from the zip.');
+                add(!!(man.name || man.short_name) && !!man.start_url && /standalone|fullscreen|minimal-ui/.test(man.display || ''), 'Manifest has name, start_url and display', 'Re-upload manifest.json from the zip.');
                 const icons = Array.isArray(man.icons) ? man.icons : [];
                 const loadImg = u => new Promise(res => { const im = new Image(); im.onload = () => res(im.naturalWidth); im.onerror = () => res(0); im.src = u; });
                 let ok192 = false, ok512 = false;
                 for (const ic of icons) {
                     const u = new URL(ic.src, mUrl || location.href).href, w = await loadImg(u), name = String(ic.src).split('/').pop();
-                    add(w > 0, 'Icon ' + name + (w ? ' loads (' + w + 'px)' : ' is MISSING'), 'Upload ' + name + ' to Netlify (same folder as index.html).');
+                    add(w > 0, 'Icon ' + name + (w ? ' loads (' + w + 'px)' : ' is MISSING'), 'Upload ' + name + ' to your GitHub repo (same folder as index.html).');
                     if (w >= 192) ok192 = true; if (w >= 512) ok512 = true;
                 }
                 add(ok192 && ok512, 'Has a working 192px and 512px icon', 'Upload icon-192.png and icon-512.png.');
@@ -918,12 +918,12 @@
             if (!('serviceWorker' in navigator)) add(false, 'Service worker not supported here', 'Use Chrome on your phone, not Incognito.');
             else {
                 let reg = null; try { reg = await navigator.serviceWorker.getRegistration(); } catch (e) {}
-                if (!reg) { try { const r = await fetch('sw.js', { cache: 'no-store' }); add(false, 'Service worker is not running (sw.js ' + (r.ok ? 'loads' : 'status ' + r.status) + ')', r.ok ? 'Close Chrome fully, reopen the link and wait a few seconds.' : 'Upload sw.js to Netlify (same folder as index.html).'); } catch (e) { add(false, 'sw.js could not be fetched', 'Upload sw.js to Netlify.'); } }
+                if (!reg) { try { const r = await fetch('sw.js', { cache: 'no-store' }); add(false, 'Service worker is not running (sw.js ' + (r.ok ? 'loads' : 'status ' + r.status) + ')', r.ok ? 'Close Chrome fully, reopen the link and wait a few seconds.' : 'Upload sw.js to your GitHub repo (same folder as index.html).'); } catch (e) { add(false, 'sw.js could not be fetched', 'Upload sw.js to your GitHub repo.'); } }
                 else add(!!(reg.active || reg.waiting || reg.installing), 'Service worker is registered', 'Close Chrome fully and reopen the link.');
             }
             const seen = !!window.__bipSeen;
             box.innerHTML = rows.map(r => `<div class="flex gap-2"><span>${r[0] ? '✅' : '❌'}</span><span>${fcEsc(r[1])}${r[0] ? '' : '<br><span class="text-amber-300">' + fcEsc(r[2] || '') + '</span>'}</span></div>`).join('')
-                + `<div class="pt-1 font-semibold ${bad ? 'text-amber-300' : 'text-emerald-300'}">${bad ? 'Fix the ❌ items above, redeploy, then reload.' : (seen ? 'All good: tap Install App again.' : 'Everything on the site is correct. If Chrome still only offers "Create shortcut": open Chrome menu > Settings > Site settings > All sites, find this site, tap Clear &amp; reset, then reopen the link, wait about 10 seconds and tap Install App.')}</div>`;
+                + `<div class="pt-1 font-semibold ${bad ? 'text-amber-300' : 'text-emerald-300'}">${bad ? 'Fix the ❌ items above, upload the files to GitHub, wait a minute, then reload.' : (seen ? 'All good: tap Install App again.' : 'Everything on the site is correct. If Chrome still only offers "Create shortcut": open Chrome menu > Settings > Site settings > All sites, find this site, tap Clear &amp; reset, then reopen the link, wait about 10 seconds and tap Install App.')}</div>`;
         }
 
         function closeInstallModal() {
