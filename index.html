@@ -1704,6 +1704,7 @@
         }
 
         function renderCalendar() {
+            if (!holidaysLoaded) ensureHolidays().then(() => renderCalendar());
             const grid = document.getElementById('calendarGrid');
             const year = calViewYear, month = calViewMonth;
             const firstDay = new Date(year, month, 1).getDay();
@@ -1715,7 +1716,7 @@
                 const isSelected = d.toDateString() === selectedCalendarDate.toDateString();
                 const isToday = d.toDateString() === new Date().toDateString();
                 const hasEv = eventsOn(isoDate(d)).length > 0;
-                html += `<button onclick="selectCalendarDate(${year}, ${month}, ${day})" class="h-12 sm:h-16 rounded-xl font-bold text-sm sm:text-lg flex flex-col items-center justify-center transition ${isSelected ? 'bg-brandCyan text-slate-950 font-black shadow-lg shadow-brandCyan/20' : 'bg-slate-900/60 hover:bg-slate-800 text-slate-300'} ${isToday && !isSelected ? 'ring-2 ring-brandCyan/60' : ''}">${day}${hasEv ? `<span class="block w-1.5 h-1.5 mt-0.5 rounded-full ${isSelected ? 'bg-slate-950' : 'bg-amber-400'}"></span>` : ''}</button>`;
+                html += `<button onclick="selectCalendarDate(${year}, ${month}, ${day})" class="h-12 sm:h-16 rounded-xl font-bold text-sm sm:text-lg flex flex-col items-center justify-center transition ${isSelected ? 'bg-brandCyan text-slate-950 font-black shadow-lg shadow-brandCyan/20' : 'bg-slate-900/60 hover:bg-slate-800 text-slate-300'} ${isToday && !isSelected ? 'ring-2 ring-brandCyan/60' : ''}">${day}${hasEv ? `<span class="block w-1.5 h-1.5 mt-0.5 rounded-full ${isSelected ? 'bg-slate-950' : 'bg-amber-400'}"></span>` : (HOLIDAYS[isoDate(d)] ? `<span class="block w-1.5 h-1.5 mt-0.5 rounded-full ${isSelected ? 'bg-slate-950' : 'bg-red-400'}"></span>` : '')}</button>`;
             }
             grid.innerHTML = html;
             document.getElementById('calendarMonthYear').innerText = new Date(year, month, 1).toLocaleString('default', { month: 'long', year: 'numeric' });
@@ -1740,6 +1741,8 @@
             evening1: { title: 'CrossFit Evening Session 1', time: '5:30 PM - 6:45 PM', h: 17, m: 30, color: 'text-brandCyan' },
             evening2: { title: 'CrossFit Evening Session 2', time: '7:00 PM - 8:15 PM', h: 19, m: 0, color: 'text-brandCyan' },
             hybrid:   { title: 'Hybrid Conditioning & Mobility', time: '6:00 PM - 7:30 PM', h: 18, m: 0, color: 'text-purple-400' },
+            holiday_cf: { title: 'Holiday CrossFit', time: '10:30 AM - 12:00 PM', h: 10, m: 30, color: 'text-red-300' },
+            holiday_hybrid: { title: 'Holiday Hybrid Conditioning', time: '4:00 PM - 5:30 PM', h: 16, m: 0, color: 'text-purple-400' },
             saturday: { title: 'Saturday CrossFit Morning Blast', time: '10:30 AM - 12:00 PM', h: 10, m: 30, color: 'text-amber-400' }
         };
         const DAY_PLAN = {
@@ -1750,21 +1753,63 @@
             4: ['Hybrid Class', 'bg-purple-500/20 text-purple-400 border-purple-500/30', ['hybrid']],
             6: ['Weekend Session', 'bg-amber-500/20 text-amber-400 border-amber-500/30', ['saturday']]
         };
+        // ---- Holidays: 10:30 AM CrossFit + 4:00 PM Hybrid ----
+        let HOLIDAYS = {}, holidaysLoaded = false;
+        async function ensureHolidays(force) {
+            if (holidaysLoaded && !force) return;
+            if (!sb) { holidaysLoaded = true; return; }
+            try {
+                const r = await sb.from('holidays').select('holiday_date,name');
+                if (r.data) { HOLIDAYS = {}; r.data.forEach(h => { HOLIDAYS[h.holiday_date] = h.name; }); }
+            } catch (e) {}
+            holidaysLoaded = true;
+        }
+        function planFor(d) {
+            const nm = HOLIDAYS[isoDate(d)];
+            return nm ? ['Holiday', 'bg-red-500/20 text-red-300 border-red-500/30', ['holiday_cf', 'holiday_hybrid']] : DAY_PLAN[d.getDay()];
+        }
+        function holidayBar(ds) {
+            const nm = HOLIDAYS[ds], head = !!currentProfile && currentProfile.role === 'head_coach';
+            let h = '';
+            if (nm) h += `<div class="p-3 rounded-2xl bg-red-500/10 border border-red-500/30 text-xs"><div class="font-extrabold text-red-300"><i class="fa-solid fa-champagne-glasses"></i> ${fcEsc(nm)} - Holiday schedule</div><div class="text-slate-300 mt-1">10:30 AM CrossFit &nbsp;·&nbsp; 4:00 PM Hybrid</div>${head ? `<button onclick="removeHoliday('${ds}')" class="mt-2 text-[11px] font-bold text-slate-400 hover:text-red-300 underline">Remove this holiday</button>` : ''}</div>`;
+            else if (head) h += `<button onclick="addHoliday('${ds}')" class="w-full py-2 rounded-xl bg-slate-900 border border-dashed border-slate-700 hover:border-red-400 text-[11px] font-bold text-slate-400 hover:text-red-300"><i class="fa-solid fa-plus"></i> Mark this date as a holiday (10:30 AM CrossFit, 4:00 PM Hybrid)</button>`;
+            return h;
+        }
+        async function addHoliday(ds) {
+            const name = (prompt('Holiday name (for example: Eid\'l Adha, or Gym closed for repairs):') || '').trim();
+            if (!name || !sb) return;
+            try {
+                const c = await sb.rpc('class_counts', { p_from: ds, p_to: ds });
+                const n = (c.data || []).reduce((a, x) => a + (x.taken || 0), 0);
+                if (n > 0 && !confirm(n + ' reservation(s) already exist for the normal classes on this date. They will no longer appear on the schedule. Continue?')) return;
+            } catch (e) {}
+            const r = await sb.from('holidays').upsert({ holiday_date: ds, name: name.slice(0, 80) }, { onConflict: 'holiday_date' });
+            if (r.error) { alert('Could not save the holiday: ' + r.error.message); return; }
+            await ensureHolidays(true); renderCalendar(); renderScheduleDetails();
+        }
+        async function removeHoliday(ds) {
+            if (!sb || !confirm('Remove this holiday and go back to the normal schedule for this date?')) return;
+            const r = await sb.from('holidays').delete().eq('holiday_date', ds);
+            if (r.error) { alert('Could not remove it: ' + r.error.message); return; }
+            await ensureHolidays(true); renderCalendar(); renderScheduleDetails();
+        }
         let scheduleReq = 0;
         function isoDate(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 
         async function renderScheduleDetails() {
             const req = ++scheduleReq;
+            await ensureHolidays();
+            if (req !== scheduleReq) return;
             const d = new Date(selectedCalendarDate);
             document.getElementById('selectedDateTitle').innerText = d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
             const container = document.getElementById('classSlotsContainer');
             const badge = document.getElementById('dayBadge');
-            const plan = DAY_PLAN[d.getDay()];
+            const plan = planFor(d);
 
             if (!plan) {
                 badge.innerText = 'Rest Day';
                 badge.className = 'px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700 text-xs font-bold';
-                container.innerHTML = scheduleEventsHtml(isoDate(d)) + `<div class="p-8 text-center bg-slate-900/40 rounded-2xl border border-slate-800 text-slate-400 text-xs"><i class="fa-solid fa-bed text-2xl mb-2 text-slate-600"></i><p class="font-bold text-slate-300">Sunday Recovery & Rest Day</p><p class="mt-1">No scheduled group classes. Rest up for Monday!</p></div>`;
+                container.innerHTML = holidayBar(isoDate(d)) + scheduleEventsHtml(isoDate(d)) + `<div class="p-8 text-center bg-slate-900/40 rounded-2xl border border-slate-800 text-slate-400 text-xs"><i class="fa-solid fa-bed text-2xl mb-2 text-slate-600"></i><p class="font-bold text-slate-300">Sunday Recovery & Rest Day</p><p class="mt-1">No scheduled group classes. Rest up for Monday!</p></div>`;
                 return;
             }
             badge.innerText = plan[0];
@@ -1774,7 +1819,7 @@
             const counts = {}, mine = {}, names = {}, slotCoaches = {};
             const draw = loaded => {
                 const approved = !!currentProfile && currentProfile.status === 'approved';
-                container.innerHTML = scheduleEventsHtml(ds) + plan[2].map(key => {
+                container.innerHTML = holidayBar(ds) + scheduleEventsHtml(ds) + plan[2].map(key => {
                     const s = SLOT_DEFS[key];
                     const taken = counts[key] || 0;
                     const started = Date.now() > new Date(d.getFullYear(), d.getMonth(), d.getDate(), s.h, s.m).getTime();
@@ -2665,7 +2710,7 @@ function membershipParts() {
                     const tag = p ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${p[1]}">${p[0]}</span>` : '';
                     return `<div class="p-3 rounded-2xl border ${isToday ? 'bg-brandCyan/10 border-brandCyan/60 shadow-lg shadow-brandCyan/10' : 'bg-slate-900/70 border-slate-800'} ${p ? '' : 'opacity-70'}"><div class="flex items-center justify-between gap-2 mb-2"><div class="flex items-center gap-2"><span class="text-sm font-heading font-bold ${isToday ? 'text-brandCyan' : 'text-white'}">${days[i]}</span>${isToday ? '<span class="px-2 py-0.5 rounded-full bg-brandCyan text-slate-950 text-[10px] font-extrabold uppercase tracking-wider">Today</span>' : ''}</div>${tag}</div><div class="flex flex-wrap gap-1.5">${times}</div></div>`;
                 }).join('');
-                hbox.innerHTML = `<div class="bg-gradient-to-br from-brandCard to-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-4 relative overflow-hidden"><div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-brandCyan/10 blur-2xl pointer-events-none"></div><div class="relative"><h2 class="font-heading font-bold text-lg text-white flex items-center gap-2"><i class="fa-solid fa-clock text-brandCyan"></i> Class Hours</h2><p class="text-xs text-slate-400 mt-0.5">Weekly schedule. Reserve your spot from the Schedule page.</p></div><div class="relative grid sm:grid-cols-2 gap-2.5">${rows}</div></div>`;
+                hbox.innerHTML = `<div class="bg-gradient-to-br from-brandCard to-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-4 relative overflow-hidden"><div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-brandCyan/10 blur-2xl pointer-events-none"></div><div class="relative"><h2 class="font-heading font-bold text-lg text-white flex items-center gap-2"><i class="fa-solid fa-clock text-brandCyan"></i> Class Hours</h2><p class="text-xs text-slate-400 mt-0.5">Weekly schedule. Reserve your spot from the Schedule page.</p></div><div class="relative grid sm:grid-cols-2 gap-2.5">${rows}</div><div class="relative p-3 rounded-2xl bg-red-500/10 border border-red-500/30 text-xs"><div class="font-extrabold text-red-300"><i class="fa-solid fa-champagne-glasses"></i> Holiday schedule</div><div class="text-slate-300 mt-1">10:30 AM CrossFit &nbsp;·&nbsp; 4:00 PM Hybrid</div></div></div>`;
             }
             if (!box) return;
             const q = encodeURIComponent(CONTACT.mapsQuery), lnk = 'px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs font-bold';
