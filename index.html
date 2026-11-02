@@ -54,8 +54,8 @@
         @keyframes ledPulse { 0%,100% { opacity:.78; } 50% { opacity:1; } }
         @keyframes ledFlicker { 0%,100% { opacity:1; } 40% { opacity:.95; } 42% { opacity:.35; } 44% { opacity:1; } 46% { opacity:.55; } 48% { opacity:1; } }
         #ledSide { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
-        #ledSide svg { position:absolute; opacity:.24; stroke-width:1.7; animation: ledPulse 5s ease-in-out infinite; }
-        main .bg-brandCard { background-color: rgb(var(--c-card) / .80); }
+        #ledSide svg { position:absolute; opacity:.36; stroke-width:1.7; animation: ledPulse 5s ease-in-out infinite; }
+        main .bg-brandCard { background-color: rgb(var(--c-card) / .74); }
         @media (prefers-reduced-motion: reduce) { .led-ico, #ledSide svg { animation:none !important; } }
         .corkboard-bg {
             background-color: #cb9b61;
@@ -1300,14 +1300,14 @@
             const sd = document.getElementById('ledSide'), base = LED_SETS[tab] || LED_SETS.home; if (!sd) return;
             const set = base.concat(base.slice(0, 2));
             const pos = [
-                'left:-6%;top:7%;width:150px;height:150px;transform:rotate(-14deg)',
-                'right:-8%;top:15%;width:175px;height:175px;transform:rotate(12deg)',
-                'left:55%;top:33%;width:105px;height:105px;transform:rotate(8deg)',
-                'left:-5%;top:43%;width:135px;height:135px;transform:rotate(10deg)',
-                'right:-6%;top:55%;width:150px;height:150px;transform:rotate(-10deg)',
-                'left:14%;top:70%;width:115px;height:115px;transform:rotate(-6deg)',
-                'right:10%;top:83%;width:140px;height:140px;transform:rotate(14deg)',
-                'left:-4%;bottom:-2%;width:165px;height:165px;transform:rotate(18deg)'
+                'left:4%;top:6%;width:120px;height:120px;transform:rotate(-12deg)',
+                'right:4%;top:14%;width:130px;height:130px;transform:rotate(10deg)',
+                'left:38%;top:30%;width:100px;height:100px;transform:rotate(6deg)',
+                'left:5%;top:42%;width:120px;height:120px;transform:rotate(9deg)',
+                'right:5%;top:52%;width:130px;height:130px;transform:rotate(-9deg)',
+                'left:30%;top:68%;width:110px;height:110px;transform:rotate(-6deg)',
+                'right:6%;top:80%;width:120px;height:120px;transform:rotate(12deg)',
+                'left:5%;bottom:4%;width:130px;height:130px;transform:rotate(14deg)'
             ];
             sd.innerHTML = set.map((k, i) => `<svg viewBox="0 0 64 64" class="led-ico" style="${pos[i]}">${LED_SVG[k]}</svg>`).join('');
         }
