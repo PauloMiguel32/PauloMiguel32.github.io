@@ -4,17 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>CrossFit Cainta - East Ortigas</title>
-
-    <!-- Firebase Import Map for Browser Modules -->
-    <script type="importmap">
-      {
-        "imports": {
-          "firebase/app": "https://www.gstatic.com/firebasejs/11.20.0/firebase-app.js",
-          "firebase/analytics": "https://www.gstatic.com/firebasejs/11.20.0/firebase-analytics.js"
-        }
-      }
-    </script>
-    
     <link rel="manifest" href="manifest.webmanifest">
     <meta name="theme-color" content="#080a0f">
     <meta name="mobile-web-app-capable" content="yes">
@@ -32,11 +21,11 @@
             theme: {
                 extend: {
                     colors: {
-                        brandCyan: 'rgb(var(--c-cyan) / <alpha-value>)',
-                        brandCyanBright: 'rgb(var(--c-cyan-b) / <alpha-value>)',
-                        brandCyanDark: 'rgb(var(--c-cyan-d) / <alpha-value>)',
-                        brandDark: 'rgb(var(--c-dark) / <alpha-value>)',
-                        brandCard: 'rgb(var(--c-card) / <alpha-value>)',
+                        brandCyan: '#00a8ff',
+                        brandCyanBright: '#00ccff',
+                        brandCyanDark: '#0077b6',
+                        brandDark: '#080a0f',
+                        brandCard: '#0d1017',
                         corkWood: '#3e220f',
                     },
                     fontFamily: {
@@ -53,7 +42,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        :root { --c-dark: 8 10 15; --c-card: 13 16 23; --c-cyan: 0 168 255; --c-cyan-b: 0 204 255; --c-cyan-d: 0 119 182; }
         .corkboard-bg {
             background-color: #cb9b61;
             background-image: 
@@ -119,34 +107,16 @@
             width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: rgb(var(--c-dark));
+            background: #080a0f;
         }
         ::-webkit-scrollbar-thumb {
             background: #1a2234;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: rgb(var(--c-cyan));
+            background: #00a8ff;
         }
     </style>
-    <script>
-        var BG_THEMES = {
-            midnight: ['Midnight', '8 10 15', '13 16 23'], black: ['Black', '0 0 0', '12 12 12'], navy: ['Navy', '7 13 28', '12 22 44'],
-            forest: ['Forest', '6 17 12', '11 28 20'], plum: ['Plum', '15 8 22', '24 14 34'], wine: ['Wine', '22 8 12', '34 14 20'], graphite: ['Graphite', '24 26 31', '33 36 43']
-        };
-        var ACCENTS = {
-            cyan: ['Cyan', '0 168 255', '0 204 255', '0 119 182'], orange: ['Orange', '255 122 0', '255 159 51', '204 92 0'], green: ['Green', '34 197 94', '74 222 128', '22 163 74'],
-            red: ['Red', '239 68 68', '248 113 113', '185 28 28'], purple: ['Purple', '168 85 247', '192 132 252', '126 34 206'], pink: ['Pink', '236 72 153', '244 114 182', '190 24 93']
-        };
-        function getTheme() { var t = {}; try { t = JSON.parse(localStorage.getItem('cainta_theme') || '{}') || {}; } catch (e) {} return { bg: BG_THEMES[t.bg] ? t.bg : 'midnight', accent: ACCENTS[t.accent] ? t.accent : 'cyan' }; }
-        function applyTheme(t) {
-            t = t || getTheme(); var b = BG_THEMES[t.bg], a = ACCENTS[t.accent], r = document.documentElement.style;
-            r.setProperty('--c-dark', b[1]); r.setProperty('--c-card', b[2]);
-            r.setProperty('--c-cyan', a[1]); r.setProperty('--c-cyan-b', a[2]); r.setProperty('--c-cyan-d', a[3]);
-            var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', 'rgb(' + b[1].split(' ').join(',') + ')');
-        }
-        applyTheme();
-    </script>
 </head>
 <body class="bg-brandDark text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-brandCyan selection:text-black">
 
@@ -192,13 +162,6 @@
                 <button onclick="installApp()" title="Install the app on your phone" class="install-btn hidden md:flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 hover:border-brandCyan text-xs font-bold text-slate-200 transition">
                     <i class="fa-solid fa-download text-brandCyan"></i> Install App
                 </button>
-                <div class="relative">
-                    <button id="notifBtn" onclick="toggleNotifPanel(event)" title="Notifications" class="hidden relative w-10 h-10 rounded-full bg-slate-900 border border-slate-700 hover:border-brandCyan text-slate-200 flex items-center justify-center transition">
-                        <i class="fa-solid fa-bell"></i>
-                        <span id="notifBadge" class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center">0</span>
-                    </button>
-                    <div id="notifPanel" onclick="event.stopPropagation()" class="hidden fixed inset-x-3 top-20 sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-3 sm:w-96 max-h-[70vh] overflow-y-auto bg-brandCard border border-slate-700 rounded-2xl shadow-2xl shadow-black/60 z-50"></div>
-                </div>
                 <div class="relative">
                     <button id="profileBtn" onclick="toggleProfileMenu(event)" aria-haspopup="true" class="flex items-center gap-3 text-left">
                         <img id="profileAvatar" alt="" onerror="avatarFallback(this)" class="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-brandCyan shadow-lg shadow-brandCyan/10 bg-slate-800">
@@ -252,7 +215,6 @@
             <div id="homeWod"></div>
             <div id="homeEvents"></div>
             <div id="homeMembership" class="space-y-4"></div>
-            <div id="homeHours"></div>
             <div id="homeContact"></div>
         </section>
 
@@ -420,8 +382,7 @@
                 <div class="flex flex-wrap justify-center gap-2" id="tmModes"></div>
                 <div class="flex items-center justify-center gap-2"><label id="tmMinLabel" class="text-xs font-bold text-slate-300 uppercase tracking-wider">Minutes</label><input id="tmMin" type="number" min="0" max="120" value="12" onchange="tmReset()" class="w-24 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xl font-bold text-white text-center focus:outline-none focus:border-brandCyan"></div>
                 <div id="tmLabel" class="text-sm font-heading font-bold tracking-[0.3em] text-slate-400">READY</div>
-                <div id="tmClock" class="font-heading font-black text-white leading-none text-[2.9rem] sm:text-[6.5rem] tabular-nums whitespace-nowrap"></div>
-                <div class="flex justify-center gap-6 text-[10px] font-bold uppercase tracking-widest text-slate-500 -mt-3"><span>Hrs : Min : Sec</span><span>Millisec</span></div>
+                <div id="tmClock" class="font-heading font-black text-white leading-none text-[5.5rem] sm:text-[9rem] tabular-nums">12:00</div>
                 <div class="flex justify-center gap-3"><button id="tmBtn" onclick="tmToggle()" class="px-4 py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs transition !px-10 !py-4 !text-base">Start</button><button onclick="tmReset()" class="px-6 py-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-extrabold text-base">Reset</button></div>
                 <p id="tmHelp" class="text-[11px] text-slate-500"></p>
             </div>
@@ -584,14 +545,6 @@
                     <input type="password" id="regPassword" required minlength="8" autocomplete="new-password" placeholder="At least 8 characters" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-300 uppercase mb-1">I am joining as</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <label class="cursor-pointer"><input type="radio" name="regType" value="member" checked class="peer sr-only"><span class="block text-center px-3 py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-sm font-bold text-slate-300 peer-checked:border-brandCyan peer-checked:text-brandCyan peer-checked:bg-brandCyan/10"><i class="fa-solid fa-user mr-1"></i> Member</span></label>
-                        <label class="cursor-pointer"><input type="radio" name="regType" value="coach" class="peer sr-only"><span class="block text-center px-3 py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-sm font-bold text-slate-300 peer-checked:border-brandCyan peer-checked:text-brandCyan peer-checked:bg-brandCyan/10"><i class="fa-solid fa-user-tie mr-1"></i> Coach</span></label>
-                    </div>
-                    <p class="text-[10px] text-slate-500 mt-1">The Head Coach still approves every account, including coaches.</p>
-                </div>
-                <div>
                     <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Bio / Tagline <span class="text-slate-500 normal-case font-medium">(optional)</span></label>
                     <input type="text" id="regBio" placeholder="e.g. Morning WOD Enthusiast" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
                 </div>
@@ -637,35 +590,6 @@
                     <p id="designMsg" class="text-[11px] text-slate-400"></p>
                 </div>
             </div>
-        </div>
-    </div>
-    <div id="settingsModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[80] hidden overflow-y-auto p-3 sm:p-6" onclick="if(event.target===this) closeSettings()">
-        <div class="w-full max-w-md mx-auto my-4 bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-6">
-            <div class="flex items-center justify-between">
-                <h3 class="font-heading font-bold text-xl text-white flex items-center gap-2"><i class="fa-solid fa-gear text-brandCyan"></i> Settings</h3>
-                <button onclick="closeSettings()" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="space-y-4">
-                <div class="text-xs font-extrabold text-brandCyan uppercase tracking-widest"><i class="fa-solid fa-palette"></i> Appearance</div>
-                <div>
-                    <div class="text-xs font-bold text-slate-300 mb-2">Background color</div>
-                    <div id="bgSwatches" class="grid grid-cols-4 gap-2"></div>
-                </div>
-                <div>
-                    <div class="text-xs font-bold text-slate-300 mb-2">Accent color (buttons and highlights)</div>
-                    <div id="accentSwatches" class="flex flex-wrap gap-3"></div>
-                </div>
-                <button onclick="resetTheme()" class="text-xs font-bold text-slate-400 hover:text-white underline">Reset to default</button>
-                <p class="text-[11px] text-slate-500">Saved on this phone or browser only.</p>
-            </div>
-            <form id="pwSection" onsubmit="changePassword(event)" class="space-y-3 border-t border-slate-800 pt-5">
-                <div class="text-xs font-extrabold text-brandCyan uppercase tracking-widest"><i class="fa-solid fa-lock"></i> Change password</div>
-                <input type="password" id="pwCurrent" required autocomplete="current-password" placeholder="Current password" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
-                <input type="password" id="pwNew1" required minlength="8" autocomplete="new-password" placeholder="New password (8+ characters)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
-                <input type="password" id="pwNew2" required minlength="8" autocomplete="new-password" placeholder="Type the new password again" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-brandCyan">
-                <p id="pwMsg" class="text-xs min-h-[1rem]"></p>
-                <button id="pwBtn" type="submit" class="w-full py-3 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-sm">Update password</button>
-            </form>
         </div>
     </div>
     <div id="resetModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[85] hidden flex items-center justify-center p-4">
@@ -919,7 +843,6 @@
             formName.classList.toggle('opacity-70', !!p);
 
             changeActiveRole(approved ? roleFromDb(p.role) : 'Guest');
-            setupNotifications();
         }
 
         function showLogin() {
@@ -1172,7 +1095,7 @@
             const { data, error } = await sb.auth.signUp({
                 email,
                 password,
-                options: { data: { full_name: fullName, bio, account_type: (document.querySelector('input[name="regType"]:checked') || {}).value === 'coach' ? 'coach' : 'member', board_ok: document.getElementById('regBoardOk').checked ? 'true' : 'false' }, emailRedirectTo: location.origin + location.pathname }
+                options: { data: { full_name: fullName, bio, board_ok: document.getElementById('regBoardOk').checked ? 'true' : 'false' }, emailRedirectTo: location.origin + location.pathname }
             });
             btn.disabled = false;
             btn.innerText = 'Submit Application';
@@ -1423,12 +1346,12 @@
                         <div class="flex items-center gap-3 min-w-0">
                             <img src="${avatarOf(u)}" alt="${fcEsc(u.full_name)}" onerror="avatarFallback(this)" class="w-12 h-12 rounded-xl object-cover border border-slate-700">
                             <div class="min-w-0">
-                                <div class="text-sm font-bold text-white truncate">${fcEsc(u.full_name)}${u.requested_role === 'coach' ? ' <span class="ml-1 px-2 py-0.5 rounded-full bg-brandCyan/20 text-brandCyan border border-brandCyan/40 text-[10px] font-extrabold align-middle">Wants to be a Coach</span>' : ''}</div>
+                                <div class="text-sm font-bold text-white truncate">${fcEsc(u.full_name)}</div>
                                 <div class="text-xs text-slate-400 truncate">${fcEsc(u.email || '')}${u.bio ? ' &bull; "' + fcEsc(u.bio) + '"' : ''}</div>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button onclick="approveUser('${u.id}')" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white font-bold text-xs rounded-xl transition">${u.requested_role === 'coach' ? 'Approve as Coach' : 'Approve'}</button>
+                            <button onclick="approveUser('${u.id}')" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white font-bold text-xs rounded-xl transition">Approve</button>
                             <button onclick="rejectUser('${u.id}')" class="px-4 py-2 bg-red-600/30 hover:bg-red-600 text-red-200 font-bold text-xs rounded-xl transition">Reject</button>
                         </div>
                     </div>
@@ -1488,7 +1411,7 @@
             await Promise.all([renderAdminPanel(), renderMembersBoard()]);
         }
 
-        function approveUser(id) { const u = (window._adminUsers || []).find(x => x.id === id); const ch = { status: 'approved', pinned: !!(u && u.board_ok) }; if (u && u.requested_role === 'coach' && u.role !== 'head_coach') ch.role = 'coach'; return adminUpdate(id, ch); }
+        function approveUser(id) { const u = (window._adminUsers || []).find(x => x.id === id); return adminUpdate(id, { status: 'approved', pinned: !!(u && u.board_ok) }); }
         function rejectUser(id) { return adminUpdate(id, { status: 'rejected', pinned: false }); }
         function setUserRole(id, role) { return adminUpdate(id, { role }); }
         function togglePin(id, pinned) { return adminUpdate(id, { pinned }); }
@@ -1715,7 +1638,6 @@
         }
 
         function renderCalendar() {
-            if (!holidaysLoaded) ensureHolidays().then(() => renderCalendar());
             const grid = document.getElementById('calendarGrid');
             const year = calViewYear, month = calViewMonth;
             const firstDay = new Date(year, month, 1).getDay();
@@ -1727,7 +1649,7 @@
                 const isSelected = d.toDateString() === selectedCalendarDate.toDateString();
                 const isToday = d.toDateString() === new Date().toDateString();
                 const hasEv = eventsOn(isoDate(d)).length > 0;
-                html += `<button onclick="selectCalendarDate(${year}, ${month}, ${day})" class="h-12 sm:h-16 rounded-xl font-bold text-sm sm:text-lg flex flex-col items-center justify-center transition ${isSelected ? 'bg-brandCyan text-slate-950 font-black shadow-lg shadow-brandCyan/20' : 'bg-slate-900/60 hover:bg-slate-800 text-slate-300'} ${isToday && !isSelected ? 'ring-2 ring-brandCyan/60' : ''}">${day}${hasEv ? `<span class="block w-1.5 h-1.5 mt-0.5 rounded-full ${isSelected ? 'bg-slate-950' : 'bg-amber-400'}"></span>` : (HOLIDAYS[isoDate(d)] ? `<span class="block w-1.5 h-1.5 mt-0.5 rounded-full ${isSelected ? 'bg-slate-950' : 'bg-red-400'}"></span>` : '')}</button>`;
+                html += `<button onclick="selectCalendarDate(${year}, ${month}, ${day})" class="h-12 sm:h-16 rounded-xl font-bold text-sm sm:text-lg flex flex-col items-center justify-center transition ${isSelected ? 'bg-brandCyan text-slate-950 font-black shadow-lg shadow-brandCyan/20' : 'bg-slate-900/60 hover:bg-slate-800 text-slate-300'} ${isToday && !isSelected ? 'ring-2 ring-brandCyan/60' : ''}">${day}${hasEv ? `<span class="block w-1.5 h-1.5 mt-0.5 rounded-full ${isSelected ? 'bg-slate-950' : 'bg-amber-400'}"></span>` : ''}</button>`;
             }
             grid.innerHTML = html;
             document.getElementById('calendarMonthYear').innerText = new Date(year, month, 1).toLocaleString('default', { month: 'long', year: 'numeric' });
@@ -1752,8 +1674,6 @@
             evening1: { title: 'CrossFit Evening Session 1', time: '5:30 PM - 6:45 PM', h: 17, m: 30, color: 'text-brandCyan' },
             evening2: { title: 'CrossFit Evening Session 2', time: '7:00 PM - 8:15 PM', h: 19, m: 0, color: 'text-brandCyan' },
             hybrid:   { title: 'Hybrid Conditioning & Mobility', time: '6:00 PM - 7:30 PM', h: 18, m: 0, color: 'text-purple-400' },
-            holiday_cf: { title: 'Holiday CrossFit', time: '10:30 AM - 12:00 PM', h: 10, m: 30, color: 'text-red-300' },
-            holiday_hybrid: { title: 'Holiday Hybrid Conditioning', time: '4:00 PM - 5:30 PM', h: 16, m: 0, color: 'text-purple-400' },
             saturday: { title: 'Saturday CrossFit Morning Blast', time: '10:30 AM - 12:00 PM', h: 10, m: 30, color: 'text-amber-400' }
         };
         const DAY_PLAN = {
@@ -1764,73 +1684,31 @@
             4: ['Hybrid Class', 'bg-purple-500/20 text-purple-400 border-purple-500/30', ['hybrid']],
             6: ['Weekend Session', 'bg-amber-500/20 text-amber-400 border-amber-500/30', ['saturday']]
         };
-        // ---- Holidays: 10:30 AM CrossFit + 4:00 PM Hybrid ----
-        let HOLIDAYS = {}, holidaysLoaded = false;
-        async function ensureHolidays(force) {
-            if (holidaysLoaded && !force) return;
-            if (!sb) { holidaysLoaded = true; return; }
-            try {
-                const r = await sb.from('holidays').select('holiday_date,name');
-                if (r.data) { HOLIDAYS = {}; r.data.forEach(h => { HOLIDAYS[h.holiday_date] = h.name; }); }
-            } catch (e) {}
-            holidaysLoaded = true;
-        }
-        function planFor(d) {
-            const nm = HOLIDAYS[isoDate(d)];
-            return nm ? ['Holiday', 'bg-red-500/20 text-red-300 border-red-500/30', ['holiday_cf', 'holiday_hybrid']] : DAY_PLAN[d.getDay()];
-        }
-        function holidayBar(ds) {
-            const nm = HOLIDAYS[ds], head = !!currentProfile && currentProfile.role === 'head_coach';
-            let h = '';
-            if (nm) h += `<div class="p-3 rounded-2xl bg-red-500/10 border border-red-500/30 text-xs"><div class="font-extrabold text-red-300"><i class="fa-solid fa-champagne-glasses"></i> ${fcEsc(nm)} - Holiday schedule</div><div class="text-slate-300 mt-1">10:30 AM CrossFit &nbsp;·&nbsp; 4:00 PM Hybrid</div>${head ? `<button onclick="removeHoliday('${ds}')" class="mt-2 text-[11px] font-bold text-slate-400 hover:text-red-300 underline">Remove this holiday</button>` : ''}</div>`;
-            else if (head) h += `<button onclick="addHoliday('${ds}')" class="w-full py-2 rounded-xl bg-slate-900 border border-dashed border-slate-700 hover:border-red-400 text-[11px] font-bold text-slate-400 hover:text-red-300"><i class="fa-solid fa-plus"></i> Mark this date as a holiday (10:30 AM CrossFit, 4:00 PM Hybrid)</button>`;
-            return h;
-        }
-        async function addHoliday(ds) {
-            const name = (prompt('Holiday name (for example: Eid\'l Adha, or Gym closed for repairs):') || '').trim();
-            if (!name || !sb) return;
-            try {
-                const c = await sb.rpc('class_counts', { p_from: ds, p_to: ds });
-                const n = (c.data || []).reduce((a, x) => a + (x.taken || 0), 0);
-                if (n > 0 && !confirm(n + ' reservation(s) already exist for the normal classes on this date. They will no longer appear on the schedule. Continue?')) return;
-            } catch (e) {}
-            const r = await sb.from('holidays').upsert({ holiday_date: ds, name: name.slice(0, 80) }, { onConflict: 'holiday_date' });
-            if (r.error) { alert('Could not save the holiday: ' + r.error.message); return; }
-            await ensureHolidays(true); renderCalendar(); renderScheduleDetails();
-        }
-        async function removeHoliday(ds) {
-            if (!sb || !confirm('Remove this holiday and go back to the normal schedule for this date?')) return;
-            const r = await sb.from('holidays').delete().eq('holiday_date', ds);
-            if (r.error) { alert('Could not remove it: ' + r.error.message); return; }
-            await ensureHolidays(true); renderCalendar(); renderScheduleDetails();
-        }
         let scheduleReq = 0;
         function isoDate(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 
         async function renderScheduleDetails() {
             const req = ++scheduleReq;
-            await ensureHolidays();
-            if (req !== scheduleReq) return;
             const d = new Date(selectedCalendarDate);
             document.getElementById('selectedDateTitle').innerText = d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
             const container = document.getElementById('classSlotsContainer');
             const badge = document.getElementById('dayBadge');
-            const plan = planFor(d);
+            const plan = DAY_PLAN[d.getDay()];
 
             if (!plan) {
                 badge.innerText = 'Rest Day';
                 badge.className = 'px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700 text-xs font-bold';
-                container.innerHTML = holidayBar(isoDate(d)) + scheduleEventsHtml(isoDate(d)) + `<div class="p-8 text-center bg-slate-900/40 rounded-2xl border border-slate-800 text-slate-400 text-xs"><i class="fa-solid fa-bed text-2xl mb-2 text-slate-600"></i><p class="font-bold text-slate-300">Sunday Recovery & Rest Day</p><p class="mt-1">No scheduled group classes. Rest up for Monday!</p></div>`;
+                container.innerHTML = scheduleEventsHtml(isoDate(d)) + `<div class="p-8 text-center bg-slate-900/40 rounded-2xl border border-slate-800 text-slate-400 text-xs"><i class="fa-solid fa-bed text-2xl mb-2 text-slate-600"></i><p class="font-bold text-slate-300">Sunday Recovery & Rest Day</p><p class="mt-1">No scheduled group classes. Rest up for Monday!</p></div>`;
                 return;
             }
             badge.innerText = plan[0];
             badge.className = 'px-3 py-1 rounded-full border text-xs font-bold ' + plan[1];
 
             const ds = isoDate(d);
-            const counts = {}, mine = {}, names = {}, slotCoaches = {};
+            const counts = {}, mine = {}, names = {};
             const draw = loaded => {
                 const approved = !!currentProfile && currentProfile.status === 'approved';
-                container.innerHTML = holidayBar(ds) + scheduleEventsHtml(ds) + plan[2].map(key => {
+                container.innerHTML = scheduleEventsHtml(ds) + plan[2].map(key => {
                     const s = SLOT_DEFS[key];
                     const taken = counts[key] || 0;
                     const started = Date.now() > new Date(d.getFullYear(), d.getMonth(), d.getDate(), s.h, s.m).getTime();
@@ -1842,19 +1720,14 @@
                     else if (!approved) btn = `<span class="text-[11px] font-bold text-amber-400">Awaiting approval</span>`;
                     else btn = `<button onclick="bookSlot('${ds}','${key}')" class="px-4 py-2 bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs rounded-xl transition">Reserve</button>`;
                     const who = (isCoachRole() && names[key] && names[key].length) ? `<div class="text-[11px] text-slate-400 mt-2 leading-relaxed">Booked: ${names[key].map(fcEsc).join(', ')}</div>` : '';
-                    return `<div class="p-4 bg-slate-900 rounded-2xl border border-slate-800"><div class="flex items-center justify-between gap-3"><div><div class="text-sm font-bold text-white">${s.title}</div><div class="text-xs ${s.color} font-semibold">${s.time}</div><div class="text-[11px] text-slate-500 mt-0.5">${loaded ? `${taken} of ${CLASS_CAP} spots taken` : 'Checking spots...'}</div>${coachRow(ds, key, loaded)}</div>${btn}</div>${who}</div>`;
+                    return `<div class="p-4 bg-slate-900 rounded-2xl border border-slate-800"><div class="flex items-center justify-between gap-3"><div><div class="text-sm font-bold text-white">${s.title}</div><div class="text-xs ${s.color} font-semibold">${s.time}</div><div class="text-[11px] text-slate-500 mt-0.5">${loaded ? `${taken} of ${CLASS_CAP} spots taken` : 'Checking spots...'}</div></div>${btn}</div>${who}</div>`;
                 }).join('');
             };
-            window._slotCoaches = slotCoaches;
             draw(false);
             if (!sb) return;
             try {
                 const r = await sb.rpc('class_counts', { p_from: ds, p_to: ds });
                 (r.data || []).forEach(x => { counts[x.slot] = x.taken; });
-                try {
-                    const sc = await sb.from('slot_coaches').select('slot,coach_id,coach_name').eq('class_date', ds).order('created_at');
-                    (sc.data || []).forEach(x => { (slotCoaches[x.slot] = slotCoaches[x.slot] || []).push(x); });
-                } catch (e) {}
                 if (currentProfile && currentProfile.status === 'approved') {
                     const b = await sb.from('class_bookings').select('id,owner,slot,member_name').eq('class_date', ds);
                     (b.data || []).forEach(x => {
@@ -1864,34 +1737,6 @@
                 }
             } catch (e) {}
             if (req === scheduleReq) draw(true);
-        }
-
-        function coachRow(ds, key, loaded) {
-            if (!loaded) return '';
-            const list = (window._slotCoaches && window._slotCoaches[key]) || [];
-            const me = currentProfile && list.find(x => x.coach_id === currentProfile.id);
-            const names = list.map(x => fcEsc(x.coach_name) + (me && x.coach_id === me.coach_id ? ' (you)' : '')).join(', ');
-            const canCoach = isCoachRole() && !!currentProfile && currentProfile.status === 'approved';
-            if (canCoach) {
-                return me
-                    ? `<button onclick="toggleSlotCoach('${ds}','${key}')" class="mt-2 px-3 py-1.5 rounded-lg bg-green-600/20 hover:bg-red-600/30 text-green-300 border border-green-600/40 text-[11px] font-extrabold text-left"><i class="fa-solid fa-user-tie"></i> Coach - ${names} <span class="font-semibold opacity-80">· tap to cancel</span></button>`
-                    : `<button onclick="toggleSlotCoach('${ds}','${key}')" class="mt-2 px-3 py-1.5 rounded-lg bg-brandCyan/10 hover:bg-brandCyan/20 text-brandCyan border border-brandCyan/40 text-[11px] font-extrabold text-left"><i class="fa-solid fa-user-tie"></i> ${list.length ? 'Coach - ' + names + ' · ' : ''}Tap to be the coach</button>`;
-            }
-            return `<div class="mt-1.5 text-[11px] ${list.length ? 'text-white font-bold' : 'text-slate-500 italic'}"><i class="fa-solid fa-user-tie text-brandCyan"></i> ${list.length ? 'Coach - ' + names : 'No coach yet'}</div>`;
-        }
-        async function toggleSlotCoach(ds, key) {
-            if (!sb || !currentProfile) return;
-            const list = (window._slotCoaches && window._slotCoaches[key]) || [];
-            const mineC = list.some(x => x.coach_id === currentProfile.id);
-            if (mineC) {
-                if (!confirm("Can't make it? Remove yourself as the coach for this class?")) return;
-                const r = await sb.from('slot_coaches').delete().eq('class_date', ds).eq('slot', key).eq('coach_id', currentProfile.id);
-                if (r.error) alert('Could not cancel: ' + r.error.message);
-            } else {
-                const r = await sb.from('slot_coaches').insert({ class_date: ds, slot: key });
-                if (r.error) alert('Could not save: ' + r.error.message);
-            }
-            renderScheduleDetails();
         }
 
         async function bookSlot(ds, slot) {
@@ -1907,87 +1752,6 @@
             if (error) alert('Could not cancel: ' + error.message);
             renderScheduleDetails();
         }
-
-        // ===== NOTIFICATIONS (bell for coaches) =====
-        let notifItems = [], notifChan = null, notifTimer = null, notifUser = null, notifFirst = true;
-        function notifEligible() { return !!currentProfile && currentProfile.status === 'approved' && ['coach', 'head_coach'].includes(currentProfile.role); }
-        function setupNotifications() {
-            const btn = document.getElementById('notifBtn'); if (!btn) return;
-            if (!sb || !notifEligible()) { stopNotifications(); btn.classList.add('hidden'); return; }
-            btn.classList.remove('hidden');
-            if (notifUser === currentProfile.id) return;
-            stopNotifications(); notifUser = currentProfile.id; notifFirst = true;
-            loadNotifications();
-            notifTimer = setInterval(loadNotifications, 60000);
-            try { notifChan = sb.channel('notif-' + notifUser).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: 'user_id=eq.' + notifUser }, () => loadNotifications()).subscribe(); } catch (e) {}
-        }
-        function stopNotifications() {
-            if (notifTimer) clearInterval(notifTimer); notifTimer = null;
-            if (notifChan && sb) { try { sb.removeChannel(notifChan); } catch (e) {} }
-            notifChan = null; notifUser = null; notifItems = [];
-            updateNotifBadge();
-        }
-        async function loadNotifications() {
-            if (!notifUser || !sb) return;
-            const { data, error } = await sb.from('notifications').select('*').order('created_at', { ascending: false }).limit(40);
-            if (error || !data) return;
-            const known = new Set(notifItems.map(n => n.id));
-            const fresh = data.filter(n => !n.read_at && !known.has(n.id));
-            notifItems = data;
-            if (!notifFirst) fresh.forEach(showNewNotif);
-            notifFirst = false;
-            updateNotifBadge(); renderNotifPanel();
-        }
-        function showNewNotif(n) {
-            const t = document.createElement('div');
-            t.className = 'fixed top-24 inset-x-3 sm:inset-x-auto sm:right-6 sm:w-80 z-[90] bg-brandCard border border-brandCyan/50 rounded-2xl p-3 shadow-2xl text-xs text-white cursor-pointer';
-            t.innerHTML = '<div class="font-extrabold text-brandCyan"><i class="fa-solid fa-bell"></i> ' + fcEsc(n.title) + '</div><div class="text-slate-300 mt-1 whitespace-pre-line">' + fcEsc(String(n.body).split('\n\n')[0]) + '</div>';
-            t.onclick = () => { t.remove(); toggleNotifPanel({ stopPropagation() {} }, true); };
-            document.body.appendChild(t); setTimeout(() => t.remove(), 7000);
-            try {
-                if ('Notification' in window && Notification.permission === 'granted') {
-                    const opts = { body: n.body, icon: 'icon-192.png', tag: n.id };
-                    if (navigator.serviceWorker) navigator.serviceWorker.ready.then(r => r.showNotification(n.title, opts)).catch(() => new Notification(n.title, opts));
-                    else new Notification(n.title, opts);
-                }
-            } catch (e) {}
-        }
-        function updateNotifBadge() {
-            const b = document.getElementById('notifBadge'); if (!b) return;
-            const c = notifItems.filter(n => !n.read_at).length;
-            b.innerText = c > 9 ? '9+' : c; b.classList.toggle('hidden', c === 0);
-        }
-        function toggleNotifPanel(e, forceOpen) {
-            if (e && e.stopPropagation) e.stopPropagation();
-            const p = document.getElementById('notifPanel'); if (!p) return;
-            const open = forceOpen ? true : p.classList.contains('hidden');
-            p.classList.toggle('hidden', !open);
-            if (open) renderNotifPanel();
-        }
-        function renderNotifPanel() {
-            const p = document.getElementById('notifPanel'); if (!p || p.classList.contains('hidden')) return;
-            const canAsk = 'Notification' in window && Notification.permission === 'default';
-            const items = notifItems.length ? notifItems.map(n => {
-                const when = new Date(n.created_at).toLocaleString('en-PH', { timeZone: 'Asia/Manila', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-                return `<button onclick="markNotifRead('${n.id}')" class="w-full text-left p-3 border-b border-slate-800 ${n.read_at ? 'opacity-60' : 'bg-brandCyan/5'}"><div class="flex items-start justify-between gap-2"><div class="text-xs font-extrabold ${n.read_at ? 'text-slate-300' : 'text-brandCyan'}">${n.read_at ? '' : '<span class="inline-block w-2 h-2 rounded-full bg-red-500 mr-1.5"></span>'}${fcEsc(n.title)}</div><div class="text-[10px] text-slate-500 shrink-0">${when}</div></div><div class="text-xs text-slate-300 mt-1.5 whitespace-pre-line leading-relaxed">${fcEsc(n.body)}</div></button>`;
-            }).join('') : '<div class="p-6 text-center text-xs text-slate-500">No notifications yet. You will see member reservations here for the days you are the assigned coach.</div>';
-            p.innerHTML = `<div class="flex items-center justify-between gap-2 p-3 border-b border-slate-800 sticky top-0 bg-brandCard"><div class="text-sm font-heading font-bold text-white"><i class="fa-solid fa-bell text-brandCyan"></i> Notifications</div><div class="flex gap-2"><button onclick="markAllNotifRead()" class="text-[11px] font-bold text-brandCyan">Mark all read</button><button onclick="clearNotifs()" class="text-[11px] font-bold text-slate-400">Clear</button></div></div>${canAsk ? '<button onclick="enablePhoneAlerts()" class="w-full p-2.5 text-[11px] font-bold text-amber-300 bg-amber-500/10 border-b border-slate-800">Turn on phone alerts (shows while the app is open or in the background)</button>' : ''}${items}`;
-        }
-        async function markNotifRead(id) {
-            await sb.from('notifications').update({ read_at: new Date().toISOString() }).eq('id', id).is('read_at', null);
-            loadNotifications();
-        }
-        async function markAllNotifRead() {
-            await sb.from('notifications').update({ read_at: new Date().toISOString() }).is('read_at', null);
-            loadNotifications();
-        }
-        async function clearNotifs() {
-            if (!confirm('Delete all your notifications?')) return;
-            await sb.from('notifications').delete().eq('user_id', notifUser);
-            loadNotifications();
-        }
-        function enablePhoneAlerts() { try { Notification.requestPermission().then(renderNotifPanel); } catch (e) {} }
-        document.addEventListener('click', () => { const p = document.getElementById('notifPanel'); if (p) p.classList.add('hidden'); });
 
         // ===== FORM CHECK: members upload videos, coaches write notes manually =====
         const FORM_LIFTS = ['Snatch', 'Clean & Jerk', 'Back Squat', 'Front Squat', 'Overhead Squat', 'Deadlift', 'Pull-ups', 'Other'];
@@ -2374,7 +2138,7 @@
 
         // ===== WOD TIMER (works offline) =====
         const TM = { mode: 'amrap', phases: [], i: 0, el: 0, prev: 0, run: false, int: null, lastC: null };
-        const TM_MODES = { amrap: ['AMRAP', 'Minutes', 12, 'Counts up to your time. Do as many rounds as you can.'], emom: ['EMOM', 'Minutes', 10, 'Counts up. A new round starts every minute.'], fortime: ['For Time', 'Time cap (min, 0 = none)', 15, 'Counts up. Tap Pause when you finish.'], tabata: ['Tabata', '', 0, '8 rounds of 20 s work, 10 s rest.'] };
+        const TM_MODES = { amrap: ['AMRAP', 'Minutes', 12, 'Count down, do as many rounds as you can.'], emom: ['EMOM', 'Minutes', 10, 'A new round starts every minute.'], fortime: ['For Time', 'Time cap (min, 0 = none)', 15, 'Counts up. Tap Pause when you finish.'], tabata: ['Tabata', '', 0, '8 rounds of 20 s work, 10 s rest.'] };
         let audioCtx;
         function beep(freq, dur) {
             try {
@@ -2384,29 +2148,21 @@
                 o.start(); o.stop(audioCtx.currentTime + dur);
             } catch (e) {}
         }
-        function tmFmtMs(ms) {
-            ms = Math.max(0, Math.floor(ms));
-            const h = Math.floor(ms / 3600000), m = Math.floor(ms / 60000) % 60, sc = Math.floor(ms / 1000) % 60, mi = ms % 1000, p = (n, w) => String(n).padStart(w || 2, '0');
-            // every digit sits in a fixed-width box so the clock never shifts while it runs
-            const box = t => t.split('').map(c => c === ':' || c === '.' ? `<span class="inline-block text-center" style="width:0.32em">${c}</span>` : `<span class="inline-block text-center" style="width:0.58em">${c}</span>`).join('');
-            return box(`${p(h)}:${p(m)}:${p(sc)}`) + `<span class="text-slate-400" style="font-size:0.45em">${box('.' + p(mi, 3))}</span>`;
-        }
         function tmFmt(s) { s = Math.max(0, Math.round(s)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
         function tmBuild() {
             const raw = parseInt(document.getElementById('tmMin').value) || 0, n = Math.max(1, raw);
-            const ph = [{ l: 'GET READY - 10 SEC COUNTDOWN', s: 10, k: 'ready' }];
-            if (TM.mode === 'amrap') ph.push({ l: `AMRAP · ${n} MIN`, s: n * 60, k: 'work' });
+            const ph = [{ l: 'GET READY', s: 10, k: 'ready' }];
+            if (TM.mode === 'amrap') ph.push({ l: 'WORK', s: n * 60, k: 'work' });
             else if (TM.mode === 'emom') for (let r = 1; r <= n; r++) ph.push({ l: `MINUTE ${r} OF ${n}`, s: 60, k: 'work' });
             else if (TM.mode === 'fortime') ph.push({ l: 'FOR TIME', s: raw * 60, up: true, k: 'work' });
             else for (let r = 1; r <= 8; r++) { ph.push({ l: `WORK ${r} OF 8`, s: 20, k: 'work' }); if (r < 8) ph.push({ l: 'REST', s: 10, k: 'rest' }); }
             TM.phases = ph;
         }
         function tmShow(sec, p, up) {
-            const base = TM.i === 0 ? 0 : TM.phases.slice(1, TM.i).reduce((a, q) => a + q.s, 0);
-            document.getElementById('tmClock').innerHTML = tmFmtMs(TM.i === 0 ? Math.ceil((p.s - sec) * 1000) : (base + sec) * 1000);
+            document.getElementById('tmClock').innerText = tmFmt(up ? Math.floor(sec) : Math.ceil(sec));
             const lab = document.getElementById('tmLabel');
             lab.innerText = p.l;
-            lab.className = 'text-sm font-heading font-bold tracking-[0.3em] ' + (p.k === 'work' ? 'text-brandCyan' : p.k === 'rest' || p.k === 'ready' ? 'text-amber-400' : 'text-slate-400');
+            lab.className = 'text-sm font-heading font-bold tracking-[0.3em] ' + (p.k === 'work' ? 'text-brandCyan' : p.k === 'rest' ? 'text-amber-400' : 'text-slate-400');
         }
         function tmTick() {
             const now = performance.now(); TM.el += now - TM.prev; TM.prev = now;
@@ -2416,11 +2172,11 @@
             if (rem <= 0) {
                 TM.i++; TM.el = 0; TM.lastC = null;
                 if (TM.i >= TM.phases.length) { beep(880, 1); return tmDone('DONE'); }
-                beep(1000, 0.5); return tmShow(0, TM.phases[TM.i]);
+                beep(1000, 0.5); return tmShow(TM.phases[TM.i].s, TM.phases[TM.i]);
             }
             const c = Math.ceil(rem);
             if (c <= 3 && c !== TM.lastC) beep(660, 0.15);
-            TM.lastC = c; tmShow(sec, p);
+            TM.lastC = c; tmShow(rem, p);
         }
         function tmStop() { clearInterval(TM.int); TM.run = false; }
         function tmDone(text) { tmStop(); document.getElementById('tmLabel').innerText = text; document.getElementById('tmBtn').innerText = 'Start'; TM.phases = []; }
@@ -2430,7 +2186,7 @@
             if (!TM.phases.length) { tmBuild(); TM.i = 0; TM.el = 0; }
             beep(1, 0.01);
             try { if (navigator.wakeLock) navigator.wakeLock.request('screen').catch(() => {}); } catch (e) {}
-            TM.prev = performance.now(); TM.run = true; TM.int = setInterval(tmTick, 33); btn.innerText = 'Pause';
+            TM.prev = performance.now(); TM.run = true; TM.int = setInterval(tmTick, 100); btn.innerText = 'Pause';
         }
         function tmReset() {
             tmStop(); TM.phases = []; TM.i = 0; TM.el = 0; TM.lastC = null;
@@ -2438,7 +2194,7 @@
             document.getElementById('tmMinLabel').innerText = m[1]; inp.parentElement.style.display = TM.mode === 'tabata' ? 'none' : '';
             document.getElementById('tmHelp').innerText = m[3];
             tmBuild(); const first = TM.phases[1];
-            document.getElementById('tmClock').innerHTML = tmFmtMs(0);
+            document.getElementById('tmClock').innerText = TM.mode === 'tabata' ? '04:00' : TM.mode === 'fortime' ? '00:00' : tmFmt((TM.mode === 'emom' ? Math.max(1, parseInt(inp.value) || 1) : Math.max(1, parseInt(inp.value) || 1)) * 60);
             document.getElementById('tmLabel').innerText = 'READY'; document.getElementById('tmLabel').className = 'text-sm font-heading font-bold tracking-[0.3em] text-slate-400';
             TM.phases = []; document.getElementById('tmBtn').innerText = 'Start';
         }
@@ -2552,7 +2308,7 @@
 
         
         // ===== MORE: membership, waiver, coaches, gallery, contact =====
-        const CONTACT = { phone: '', facebook: 'https://www.facebook.com/cfeastortigas', instagram: 'https://www.instagram.com/crossfitcainta/', mapsQuery: 'CrossFit Cainta East Ortigas' };  // phone: add your number (e.g. '+639171234567') to show a Call button
+        const CONTACT = { phone: '', facebook: '', instagram: '', mapsQuery: 'CrossFit Cainta East Ortigas' };  // fill in phone / links to show them
         const WAIVER_VERSION = '2026-1';
         const WAIVER_TEXT = `ASSUMPTION OF RISK AND WAIVER OF LIABILITY - CrossFit Cainta East Ortigas
 
@@ -2711,22 +2467,12 @@ function membershipParts() {
                         box.innerHTML = '<h2 class="font-heading font-bold text-lg text-white flex items-center gap-2"><i class="fa-solid fa-users text-brandCyan"></i> Our Coaches</h2>' + coaches;
         }
         function renderContact() {
-            const hbox = document.getElementById('homeHours'), box = document.getElementById('homeContact');
-            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], today = new Date().getDay();
-            const order = [1, 2, 3, 4, 5, 6, 0];
-            if (hbox) {
-                const rows = order.map(i => {
-                    const p = DAY_PLAN[i], isToday = i === today;
-                    const times = p ? p[2].map(k => `<span class="px-2.5 py-1 rounded-lg bg-slate-950/70 border border-slate-700 text-[11px] font-bold text-white whitespace-nowrap"><i class="fa-regular fa-clock ${SLOT_DEFS[k].color} mr-1"></i>${SLOT_DEFS[k].time}</span>`).join('') : '<span class="text-[11px] font-semibold text-slate-500 italic">Rest day - recover well 💤</span>';
-                    const tag = p ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${p[1]}">${p[0]}</span>` : '';
-                    return `<div class="p-3 rounded-2xl border ${isToday ? 'bg-brandCyan/10 border-brandCyan/60 shadow-lg shadow-brandCyan/10' : 'bg-slate-900/70 border-slate-800'} ${p ? '' : 'opacity-70'}"><div class="flex items-center justify-between gap-2 mb-2"><div class="flex items-center gap-2"><span class="text-sm font-heading font-bold ${isToday ? 'text-brandCyan' : 'text-white'}">${days[i]}</span>${isToday ? '<span class="px-2 py-0.5 rounded-full bg-brandCyan text-slate-950 text-[10px] font-extrabold uppercase tracking-wider">Today</span>' : ''}</div>${tag}</div><div class="flex flex-wrap gap-1.5">${times}</div></div>`;
-                }).join('');
-                hbox.innerHTML = `<div class="bg-gradient-to-br from-brandCard to-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-4 relative overflow-hidden"><div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-brandCyan/10 blur-2xl pointer-events-none"></div><div class="relative"><h2 class="font-heading font-bold text-lg text-white flex items-center gap-2"><i class="fa-solid fa-clock text-brandCyan"></i> Class Hours</h2><p class="text-xs text-slate-400 mt-0.5">Weekly schedule. Reserve your spot from the Schedule page.</p></div><div class="relative grid sm:grid-cols-2 gap-2.5">${rows}</div><div class="relative p-3 rounded-2xl bg-red-500/10 border border-red-500/30 text-xs"><div class="font-extrabold text-red-300"><i class="fa-solid fa-champagne-glasses"></i> Holiday schedule</div><div class="text-slate-300 mt-1">10:30 AM CrossFit &nbsp;·&nbsp; 4:00 PM Hybrid</div></div></div>`;
-            }
-            if (!box) return;
+            const box = document.getElementById('homeContact'); if (!box) return;
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const hours = days.map((n, i) => `<div class="flex justify-between gap-3"><span class="font-bold text-slate-200">${n}</span><span class="text-right">${DAY_PLAN[i] ? DAY_PLAN[i][2].map(k => SLOT_DEFS[k].time).join(' · ') : 'Rest day'}</span></div>`).join('');
             const q = encodeURIComponent(CONTACT.mapsQuery), lnk = 'px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs font-bold';
-            const contact = `<div class="flex flex-wrap gap-2"><a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener" class="${lnk}"><i class="fa-solid fa-location-dot text-brandCyan"></i> Open in Maps</a><a href="https://www.google.com/maps/dir/?api=1&destination=${q}" target="_blank" rel="noopener" class="${lnk}">Directions</a>${CONTACT.phone ? `<a href="tel:${fcEsc(CONTACT.phone)}" class="${lnk}"><i class="fa-solid fa-phone text-brandCyan"></i> Call</a>` : ''}${CONTACT.facebook ? `<a href="${fcEsc(CONTACT.facebook)}" target="_blank" rel="noopener" class="${lnk}">Facebook</a>` : ''}${CONTACT.instagram ? `<a href="${fcEsc(CONTACT.instagram)}" target="_blank" rel="noopener" class="${lnk}">Instagram</a>` : ''}</div>`;
-            box.innerHTML = `<div class="bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-3"><h2 class="font-heading font-bold text-lg text-white flex items-center gap-2"><i class="fa-solid fa-location-dot text-brandCyan"></i> Find Us</h2>${contact}</div>`;
+            const contact = `<div class="text-xs text-slate-400 space-y-1">${hours}</div><div class="flex flex-wrap gap-2 pt-2"><a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener" class="${lnk}"><i class="fa-solid fa-location-dot text-brandCyan"></i> Open in Maps</a><a href="https://www.google.com/maps/dir/?api=1&destination=${q}" target="_blank" rel="noopener" class="${lnk}">Directions</a>${CONTACT.phone ? `<a href="tel:${fcEsc(CONTACT.phone)}" class="${lnk}"><i class="fa-solid fa-phone text-brandCyan"></i> Call</a>` : ''}${CONTACT.facebook ? `<a href="${fcEsc(CONTACT.facebook)}" target="_blank" rel="noopener" class="${lnk}">Facebook</a>` : ''}${CONTACT.instagram ? `<a href="${fcEsc(CONTACT.instagram)}" target="_blank" rel="noopener" class="${lnk}">Instagram</a>` : ''}</div>`;
+            box.innerHTML = `<div class="bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-3"><h2 class="font-heading font-bold text-lg text-white flex items-center gap-2"><i class="fa-solid fa-location-dot text-brandCyan"></i> Find Us &amp; Hours</h2>${contact}</div>`;
         }
 
         async function signWaiver() {
@@ -2802,13 +2548,13 @@ function membershipParts() {
         function evCard(e, cls) {
             const k = EV_KIND[e.kind] || EV_KIND.event, img = evUrl(e.photo_path), when = evWhen(e);
             return `<button onclick="openEvent('${e.id}')" class="${cls} text-left bg-brandCard border border-slate-800 rounded-3xl overflow-hidden hover:border-brandCyan/50 transition">
-                <div class="${img ? '' : 'h-48 '}bg-gradient-to-br from-slate-800 to-slate-900 relative flex items-center justify-center text-5xl">${img ? `<img src="${fcEsc(img)}" loading="lazy" alt="${fcEsc(e.title)}" class="w-full h-auto max-h-[26rem] object-contain block">` : k[2]}<span class="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold border ${k[1]}">${k[0]}</span>${when ? `<span class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/70 text-white">${when}</span>` : ''}</div>
+                <div class="h-40 bg-gradient-to-br from-slate-800 to-slate-900 relative flex items-center justify-center text-5xl">${img ? `<img src="${fcEsc(img)}" loading="lazy" alt="${fcEsc(e.title)}" class="absolute inset-0 w-full h-full object-cover">` : k[2]}<span class="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold border ${k[1]}">${k[0]}</span>${when ? `<span class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/70 text-white">${when}</span>` : ''}</div>
                 <div class="p-4 space-y-0.5"><div class="text-base font-bold text-white leading-tight">${fcEsc(e.title)}</div>${e.event_date ? `<div class="text-xs font-semibold text-brandCyan">${evDateText(e)}</div>` : ''}${e.location ? `<div class="text-xs text-slate-400"><i class="fa-solid fa-location-dot"></i> ${fcEsc(e.location)}</div>` : ''}</div></button>`;
         }
-        const ROUL_CARD = 'snap-center shrink-0 w-full';
+        const ROUL_CARD = 'snap-center shrink-0 w-[78%] sm:w-[46%] lg:w-[34%]';
         function rouletteHtml(id, cards) {
             const arrow = (side, dir, icon) => `<button onclick="rouletteGo('${id}', ${dir})" class="absolute ${side} top-[42%] z-10 w-9 h-9 rounded-full bg-black/60 hover:bg-black/80 text-white"><i class="fa-solid fa-chevron-${icon}"></i></button>`;
-            return `<div class="relative">${arrow('left-0', -1, 'left')}${arrow('right-0', 1, 'right')}<div id="${id}" class="relative flex gap-3 overflow-x-auto snap-x snap-mandatory py-3 px-[12%] sm:px-[22%] lg:px-[28%]" style="scrollbar-width:none">${cards}</div><div id="${id}Dots" class="flex justify-center gap-1.5"></div></div>`;
+            return `<div class="relative">${arrow('left-0', -1, 'left')}${arrow('right-0', 1, 'right')}<div id="${id}" class="relative flex gap-3 overflow-x-auto snap-x snap-mandatory py-3 px-[11%] sm:px-[27%] lg:px-[33%]" style="scrollbar-width:none">${cards}</div><div id="${id}Dots" class="flex justify-center gap-1.5"></div></div>`;
         }
         function rouletteGo(id, dir) { const el = document.getElementById(id); if (!el || !el.children[0]) return; el.scrollBy({ left: dir * (el.children[0].offsetWidth + 12), behavior: 'smooth' }); }
         function rouletteUpdate(el, id) {
@@ -2874,12 +2620,12 @@ function membershipParts() {
         function closeAlbumModal() { document.getElementById('albumModal').classList.add('hidden'); }
         function openAlbum(id) {
             const a = ALBUMS.find(x => x.id === id); if (!a) return;
-            const coach = isCoachRole(), canAdd = canPost(), myId = currentProfile ? currentProfile.id : null, manage = canAdd, media = albMedia(id), ghost = 'px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs font-bold';
+            const coach = isCoachRole(), canAdd = canPost(), myId = currentProfile ? currentProfile.id : null, manage = coach || (!!myId && a.created_by === myId), media = albMedia(id), ghost = 'px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs font-bold';
             document.getElementById('albumModal').classList.remove('hidden');
             document.getElementById('albumModalBody').innerHTML = `<div class="p-5 sm:p-6 space-y-4">
                 <div class="flex items-start justify-between gap-3"><div><h3 class="text-2xl font-heading font-bold text-white leading-tight">${fcEsc(a.title)}</h3>${a.description ? `<p class="text-sm text-slate-300 mt-1 whitespace-pre-wrap">${fcEsc(a.description)}</p>` : ''}<div class="text-[11px] text-slate-500 mt-1">${media.length} item${media.length === 1 ? '' : 's'}</div></div><button onclick="closeAlbumModal()" class="w-9 h-9 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 shrink-0"><i class="fa-solid fa-xmark"></i></button></div>
                 ${canAdd ? `<div class="flex flex-wrap items-center gap-2"><button onclick="document.getElementById('albFile').click()" class="px-4 py-2.5 rounded-xl bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs"><i class="fa-solid fa-images"></i> Add photos / videos</button>${manage ? `<button onclick="openAlbumForm('${a.id}')" class="${ghost}">Rename</button><button onclick="deleteAlbum('${a.id}')" class="${ghost} !text-red-400">Delete album</button>` : ''}<input type="file" id="albFile" accept="image/*,video/*" multiple class="hidden" onchange="uploadAlbumMedia(this.files, '${a.id}'); this.value=''"><span id="albUpMsg" class="text-[11px] text-slate-400"></span></div><p class="text-[11px] text-slate-500">Any phone video works (MP4, MOV and more). Videos over 45 MB are compressed automatically; keep the screen open while that happens. Photos are saved in high quality. Please only share pictures you are happy for the whole gym to see.</p>` : ''}
-                ${media.length ? `<div class="grid grid-cols-2 sm:grid-cols-3 gap-2">${media.map((m, i) => `<div class="relative aspect-square bg-slate-900 rounded-lg overflow-hidden"><button onclick="openLightbox('${a.id}', ${i})" class="absolute inset-0">${mediaThumb(m, 'w-full h-full object-cover')}${m.kind === 'video' ? '<span class="absolute inset-0 flex items-center justify-center text-white/90 text-2xl"><i class="fa-solid fa-circle-play"></i></span>' : ''}</button>${manage ? `<button onclick="deleteAlbumMedia('${m.id}', '${fcEsc(m.path)}', '${a.id}')" class="absolute top-1 right-1 w-6 h-6 rounded-md bg-black/70 text-red-400 text-[10px]"><i class="fa-solid fa-trash"></i></button>` : ''}</div>`).join('')}</div>` : '<p class="text-xs text-slate-500 italic">This album is empty.</p>'}
+                ${media.length ? `<div class="grid grid-cols-2 sm:grid-cols-3 gap-2">${media.map((m, i) => `<div class="relative aspect-square bg-slate-900 rounded-lg overflow-hidden"><button onclick="openLightbox('${a.id}', ${i})" class="absolute inset-0">${mediaThumb(m, 'w-full h-full object-cover')}${m.kind === 'video' ? '<span class="absolute inset-0 flex items-center justify-center text-white/90 text-2xl"><i class="fa-solid fa-circle-play"></i></span>' : ''}</button>${(manage || (!!myId && m.owner === myId)) ? `<button onclick="deleteAlbumMedia('${m.id}', '${fcEsc(m.path)}', '${a.id}')" class="absolute top-1 right-1 w-6 h-6 rounded-md bg-black/70 text-red-400 text-[10px]"><i class="fa-solid fa-trash"></i></button>` : ''}</div>`).join('')}</div>` : '<p class="text-xs text-slate-500 italic">This album is empty.</p>'}
             </div>`;
         }
         function openAlbumForm(id) {
@@ -3040,7 +2786,7 @@ function membershipParts() {
             const head = activeRole === 'Head Coach', k = EV_KIND[e.kind] || EV_KIND.event, img = evUrl(e.photo_path);
             const ghost = 'px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs font-bold';
             document.getElementById('eventModal').classList.remove('hidden');
-            document.getElementById('eventModalBody').innerHTML = `${img ? `<img src="${fcEsc(img)}" alt="" class="w-full max-h-[75vh] object-contain bg-black">` : ''}
+            document.getElementById('eventModalBody').innerHTML = `${img ? `<img src="${fcEsc(img)}" alt="" class="w-full max-h-72 object-cover">` : ''}
                 <div class="p-5 sm:p-6 space-y-4">
                     <div class="flex items-start justify-between gap-3"><div class="space-y-1"><span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold border ${k[1]}">${k[0]}</span><h3 class="text-2xl font-heading font-bold text-white leading-tight">${fcEsc(e.title)}</h3>${e.event_date ? `<div class="text-sm font-semibold text-brandCyan">${evDateText(e)}</div>` : ''}${e.location ? `<div class="text-xs text-slate-400"><i class="fa-solid fa-location-dot"></i> ${fcEsc(e.location)}</div>` : ''}</div><button onclick="closeEventModal()" class="w-9 h-9 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 shrink-0"><i class="fa-solid fa-xmark"></i></button></div>
                     ${e.details ? `<p class="text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">${fcEsc(e.details)}</p>` : ''}
@@ -3119,71 +2865,26 @@ function membershipParts() {
 
         
         // ===== PROFILE DROPDOWN MENU =====
-        // ===== SETTINGS: theme + change password =====
-        function openSettings() {
-            document.getElementById('pwSection').classList.toggle('hidden', !currentProfile);
-            document.getElementById('pwMsg').innerText = '';
-            renderSettings();
-            document.getElementById('settingsModal').classList.remove('hidden');
-        }
-        function closeSettings() { document.getElementById('settingsModal').classList.add('hidden'); }
-        function renderSettings() {
-            const t = getTheme();
-            document.getElementById('bgSwatches').innerHTML = Object.keys(BG_THEMES).map(k => {
-                const b = BG_THEMES[k], on = t.bg === k;
-                return `<button onclick="setTheme('bg','${k}')" class="rounded-xl p-1.5 border-2 ${on ? 'border-brandCyan' : 'border-slate-700'} text-center" style="background:rgb(${b[1]})"><span class="block h-6 rounded-lg border border-white/10" style="background:rgb(${b[2]})"></span><span class="block text-[10px] font-bold mt-1 ${on ? 'text-brandCyan' : 'text-slate-300'}">${b[0]}</span></button>`;
-            }).join('');
-            document.getElementById('accentSwatches').innerHTML = Object.keys(ACCENTS).map(k => {
-                const a = ACCENTS[k], on = t.accent === k;
-                return `<button onclick="setTheme('accent','${k}')" title="${a[0]}" class="w-10 h-10 rounded-full border-2 ${on ? 'border-white ring-2 ring-offset-2 ring-offset-brandCard ring-white/60' : 'border-slate-700'}" style="background:rgb(${a[1]})">${on ? '<i class="fa-solid fa-check text-slate-950 text-xs"></i>' : ''}</button>`;
-            }).join('');
-        }
-        function setTheme(kind, key) {
-            const t = getTheme(); t[kind] = key;
-            try { localStorage.setItem('cainta_theme', JSON.stringify(t)); } catch (e) {}
-            applyTheme(t); renderSettings();
-        }
-        function resetTheme() { try { localStorage.removeItem('cainta_theme'); } catch (e) {} applyTheme(); renderSettings(); }
-        async function changePassword(e) {
-            e.preventDefault();
-            const msg = document.getElementById('pwMsg'), btn = document.getElementById('pwBtn');
-            const cur = document.getElementById('pwCurrent').value, a = document.getElementById('pwNew1').value, b = document.getElementById('pwNew2').value;
-            const bad = t => { msg.className = 'text-xs text-red-400 min-h-[1rem]'; msg.innerText = t; };
-            if (!sb || !currentProfile) { bad('Please log in first.'); return; }
-            if (a.length < 8) { bad('The new password must be at least 8 characters.'); return; }
-            if (a !== b) { bad('The two new passwords do not match.'); return; }
-            if (a === cur) { bad('Choose a password different from your current one.'); return; }
-            btn.disabled = true; btn.innerText = 'Updating...'; msg.innerText = '';
-            const chk = await sb.auth.signInWithPassword({ email: currentProfile.email, password: cur });
-            if (chk.error) { btn.disabled = false; btn.innerText = 'Update password'; bad('Your current password is not correct.'); return; }
-            const { error } = await sb.auth.updateUser({ password: a });
-            btn.disabled = false; btn.innerText = 'Update password';
-            if (error) { bad(error.message); return; }
-            e.target.reset();
-            msg.className = 'text-xs text-green-400 min-h-[1rem]'; msg.innerText = 'Password updated. Use the new one next time you log in.';
-        }
-
         function renderProfileMenu() {
             const p = currentProfile, menu = document.getElementById('profileMenu');
             if (!menu) return;
             const item = (act, icon, text, cls) => `<button onclick="menuAct('${act}')" class="w-full text-left px-4 py-3 text-sm font-semibold ${cls || 'text-slate-200'} hover:bg-slate-800 flex items-center gap-3"><i class="fa-solid fa-${icon} w-4 text-center ${cls ? '' : 'text-brandCyan'}"></i>${text}</button>`;
             const top = p ? `<div class="px-4 py-3 border-b border-slate-800"><div class="text-sm font-bold text-white truncate">${fcEsc(p.full_name)}</div><div class="text-[11px] text-slate-400 truncate">${fcEsc(p.email || '')}</div>${p.status !== 'approved' ? `<div class="mt-1 text-[10px] font-bold text-amber-400 uppercase">${fcEsc(p.status)}</div>` : ''}</div>` : `<div class="px-4 py-3 border-b border-slate-800 text-xs text-slate-400">You are browsing as a guest.</div>`;
             menu.innerHTML = top + (p
-                ? item('profile', 'user', 'Profile') + item('settings', 'gear', 'Settings') + item('install', 'download', 'Install app') + '<div class="border-t border-slate-800">' + item('logout', 'right-from-bracket', 'Log out', 'text-red-400') + '</div>'
-                : item('login', 'right-to-bracket', 'Log in / Create account') + item('settings', 'gear', 'Settings') + item('install', 'download', 'Install app'));
+                ? item('profile', 'user', 'Profile') + item('install', 'download', 'Install app') + '<div class="border-t border-slate-800">' + item('logout', 'right-from-bracket', 'Log out', 'text-red-400') + '</div>'
+                : item('login', 'right-to-bracket', 'Log in / Create account') + item('install', 'download', 'Install app'));
         }
         function toggleProfileMenu(e) { e.stopPropagation(); document.getElementById('profileMenu').classList.toggle('hidden'); }
         function closeProfileMenu() { const m = document.getElementById('profileMenu'); if (m) m.classList.add('hidden'); }
         function menuAct(a) {
             closeProfileMenu();
             if (a === 'profile') openProfileModal();
-            else if (a === 'settings') openSettings();
             else if (a === 'install') installApp();
             else if (a === 'logout') logout();
             else if (a === 'login') showLogin();
         }
         document.addEventListener('click', ev => { const m = document.getElementById('profileMenu'); if (m && !m.classList.contains('hidden') && !m.contains(ev.target)) closeProfileMenu(); });
-        document.addEventListener('keydown', ev => { if (ev.key === 'Escape') { closeProfileMenu(); closeSettings(); } });
+        document.addEventListener('keydown', ev => { if (ev.key === 'Escape') closeProfileMenu(); });
 
         
         // ===== STICKER LIBRARY (any emoji + word badges) =====
@@ -3308,7 +3009,5 @@ function membershipParts() {
             window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
         }
     </script>
-
-    <script type="module" src="./firebase.js"></script>
 </body>
 </html>
