@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "firebase": "^13.2.0"
+  },
+  "allowScripts": {
+    "@firebase/util@1.15.3": true
+  }
+}

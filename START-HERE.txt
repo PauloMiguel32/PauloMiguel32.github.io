@@ -1,0 +1,125 @@
+CROSSFIT CAINTA - EAST ORTIGAS APP (version 2)
+==============================================
+
+EASIEST WAY TO UPDATE (recommended): run  supabase-all-updates.sql  ONCE in the SQL Editor.
+  It contains every update from v2 to v17 in the right order and skips anything already done.
+  Use it if you got an error like  relation "public.album_media" does not exist  (means v10 was skipped).
+
+SETTINGS (no database update needed): profile menu > Settings: background color, accent color, change password.
+
+VERSION 17 (Holiday schedule): run supabase-update-v17.sql once (after v16).
+  On a holiday the Schedule shows 10:30 AM CrossFit and 4:00 PM Hybrid. Philippine 2026-2027 holidays
+  are pre-filled. Head Coach: Schedule > pick a date > Mark as holiday / Remove (for Eid'l Fitr, Eid'l Adha, closures).
+
+VERSION 16 (Tap to be the coach): run supabase-update-v16.sql once (after v15).
+  Schedule: a coach taps a class time to claim it ("Coach - Name" shows for everyone) and taps
+  again to cancel. Claimed coaches get a bell notification with the member list.
+
+VERSION 15 (Create Account: Member or Coach): run supabase-update-v15.sql once (after v14).
+  People pick Member or Coach when they sign up. The Head Coach just taps Approve (it says
+  "Approve as Coach" for coach requests). Nobody becomes a coach without that approval.
+
+VERSION 14 (Coach of the day + notifications): run supabase-update-v14.sql once (after v13).
+  Schedule: any coach picks the coach for each date. That coach gets a bell notification with the
+  list of members attending whenever someone reserves or cancels.
+
+VERSION 13 (everyone approved can rename/delete any album and remove any photo/video): run supabase-update-v13.sql once (after v12).
+
+VERSION 12 (members can create albums and add photos/videos): run supabase-update-v12.sql once (after v11).
+  Members edit/delete only their own; coaches can remove anything.
+
+VERSION 11 (better uploads): run supabase-update-v11.sql once (after v10). Album uploads need v10 first.
+  Videos from any phone work; ones over 45 MB are compressed automatically in the app. Photos are saved bigger.
+
+VERSION 10 (Albums with videos, roulette events, unlimited stickers, cork board decorating, More tab removed):
+  run supabase-update-v10.sql once (after v9).
+  Waiver moved to Profile, coach bios to the Board page, Find Us & Hours to the bottom of Home.
+
+VERSION 9 (Profile page, birthday, board card stickers): run supabase-update-v9.sql once (after v8).
+  Tap your name > Profile: change photo, name, birthday, see your membership, and
+  "Design my board card" to add stickers and a paper colour.
+
+VERSION 8 (Events / Comps / Albums): run supabase-update-v8.sql once (after v7).
+  Head Coach: Events page > + Add event / comp (title, date, location, cover picture), then open it to Add photos.
+  Upcoming events show as a swipe carousel on Home and as dots on the Schedule calendar.
+
+VERSION 7 (Membership rates + payments): run supabase-update-v7.sql once (after v6).
+  Head Coach: Admin > a member > Membership: pick the plan, start date, add-on and
+  next payment date. After they pay, tap "+1 mo". Rates are listed in the RATES line in index.html.
+
+VERSION 6 (board fixes, photo upload): run supabase-update-v6.sql once (after v5).
+  Members who tick "allow board" now appear on the Members Board once approved.
+
+VERSION 5 (WOD below "What is CrossFit?", whiteboard photo): run supabase-update-v5.sql once (after v4).
+  Coaches: log in, open Home, tap "Post WOD" (type it, attach a photo, or both).
+
+VERSION 4 (More tab: membership, waiver, coaches, gallery, contact): also run
+  supabase-update-v4.sql once (after v3). Fill in CONTACT near the top of the "MORE" code
+  in index.html (phone, Facebook, Instagram) so those buttons appear. Have a lawyer
+  review WAIVER_TEXT. Reserving a class now needs a signed waiver.
+
+VERSION 3 (WOD, Timer, PRs, Announcements): also run  supabase-update-v3.sql
+  once in the SQL Editor (after v2), then upload the folder to Netlify again.
+  Head Coach/coaches: Home page > Post WOD. Head Coach: Home > Post announcement.
+
+ALREADY SET UP BEFORE (version 1)? Do only this:
+  1. Supabase > SQL Editor > New query: paste ALL of  supabase-update-v2.sql  > Run.
+  2. Upload this folder again to Netlify (Deploys > drag the folder), replacing the old one.
+  3. Close and reopen the app on your phone.
+  Note: everyone is now hidden from the Members Board until they tick
+  "allow board" (they can in My Profile: tap their name) and you pin them.
+  Your own Head Coach card stays.
+
+FIRST TIME? Total time: about 15 minutes.
+
+PART 1 - SET UP THE DATABASE (Supabase)
+  1. Open your Supabase project > SQL Editor > New query.
+  2. Paste ALL of  supabase-setup.sql  and press Run. Then do the same with
+     supabase-update-v2.sql  (in that order). Both say "Success".
+  3. Authentication > Email sign-in settings:
+       - Turn OFF "Confirm email" (the free email sender only allows a few
+         emails per hour). The Head Coach approving every account is your check.
+       - Set the minimum password length to 8.
+
+PART 2 - PUT THE APP ONLINE (free)
+  1. Go to https://app.netlify.com/drop and drag this whole folder onto the page.
+  2. You get a link like https://something.netlify.app - this is your app.
+  3. Supabase > Authentication > URL Configuration: set "Site URL" to that link.
+
+PART 3 - CREATE THE HEAD COACH
+  1. Open your app link, tap Create Account and sign up as the Head Coach first.
+  2. SQL Editor: open make-head-coach.sql, put that same email in, press Run (1 row affected).
+  3. In the app, log out and log in again. The Admin page now appears.
+
+PART 4 - EVERYONE ELSE
+  - Members tap Create Account and wait for approval.
+  - Head Coach opens Admin: Approve, then (only if the member allowed it) Pin to Board.
+    Members can also be promoted to Assistant Coach there.
+  - Tap your name (top right) for My Profile: change photo, board permission.
+    Tap the round picture to change your photo directly.
+
+WHAT'S NEW IN VERSION 2
+  - Class booking is real: 15 spots per class, Reserve / Cancel, "Full" and
+    "Closed" states. Coaches see who is booked.
+  - Members Board is opt-in: shows only name, photo and role, only for approved,
+    pinned members who allowed it. It is visible to anyone with the link.
+  - Names on videos, notes and bookings come from the account, not the browser.
+  - Calendar opens on today and month buttons no longer skip months.
+  - Proper "new password" screen. App updates show on the next open.
+
+HOW PRIVACY WORKS
+  - Rules are enforced by the database, not the page. A member cannot see another
+    member's videos or give themselves a coach role.
+  - Videos: private, 50 MB each (record in 1080p, under about a minute).
+    Coaches see all videos and are the only ones who can write notes.
+
+GOOD TO KNOW (free plan)
+  - Video storage is 1 GB total. Delete old videos.
+  - The project pauses after a week with no visits: Restore it in the Supabase
+    dashboard, or visit the app regularly.
+  - If a member is locked out, reset them in Supabase > Authentication > Users.
+  - Class times are compared with the phone's clock; booking dates use Philippine time.
+
+FILES
+  index.html, manifest.webmanifest, sw.js, icons, jason-truman.jpg   the app
+  supabase-setup.sql, supabase-update-v2.sql, make-head-coach.sql    run once each
