@@ -1,4 +1,4 @@
-const CACHE = 'cainta-v3';
+const CACHE = 'cainta-v17';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'jason-truman.jpg'];
 
 self.addEventListener('install', e => {
