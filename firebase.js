@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { getFirestore } from "firebase/firestore"; // Add this line
 
 const firebaseConfig = {
   apiKey: "AIzaSyDqrTnw_JU8kO06hH5cO3WbTDhRpN38NWE",
@@ -14,6 +15,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+const db = getFirestore(app); // Add this line to export your database instance
 
-// Verify connection:
 console.log("Firebase successfully initialized for project:", app.options.projectId);
