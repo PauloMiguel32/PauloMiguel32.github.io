@@ -116,9 +116,43 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #00a8ff;
         }
+
+        /* ===== LED neon equipment background ===== */
+        #ledBg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        #ledBg .led {
+            position: absolute; fill: none; stroke: currentColor; stroke-width: 2.6;
+            stroke-linecap: round; stroke-linejoin: round; opacity: .5;
+            filter: drop-shadow(0 0 3px currentColor) drop-shadow(0 0 10px currentColor);
+            animation: ledPulse 4.5s ease-in-out infinite;
+        }
+        #ledBg .led.flick { animation: ledFlicker 6s linear infinite; }
+        @keyframes ledPulse { 0%,100% { opacity: .34; } 50% { opacity: .68; } }
+        @keyframes ledFlicker {
+            0%,18%,22%,62%,64%,100% { opacity: .62; }
+            20%,63% { opacity: .15; }
+            21% { opacity: .5; }
+        }
+        @media (prefers-reduced-motion: reduce) { #ledBg .led, #ledBg .led.flick { animation: none; opacity: .5; } }
     </style>
 </head>
 <body class="bg-brandDark text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-brandCyan selection:text-black">
+    <!-- LED neon crossfit equipment background -->
+    <div id="ledBg" aria-hidden="true"></div>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <defs>
+            <symbol id="led-barbell" viewBox="0 0 100 100"><path d="M3 50H97M20 50V50"/><rect x="14" y="22" width="9" height="56" rx="2"/><rect x="23" y="31" width="7" height="38" rx="2"/><rect x="77" y="22" width="9" height="56" rx="2"/><rect x="70" y="31" width="7" height="38" rx="2"/><path d="M30 44v12M70 44v12"/></symbol>
+            <symbol id="led-kettlebell" viewBox="0 0 100 100"><path d="M33 40C30 6 70 6 67 40"/><circle cx="50" cy="63" r="27"/><path d="M33 90h34"/></symbol>
+            <symbol id="led-dumbbell" viewBox="0 0 100 100"><rect x="6" y="32" width="12" height="36" rx="3"/><rect x="18" y="38" width="9" height="24" rx="2"/><rect x="82" y="32" width="12" height="36" rx="3"/><rect x="73" y="38" width="9" height="24" rx="2"/><path d="M27 50h46"/></symbol>
+            <symbol id="led-plate" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44"/><circle cx="50" cy="50" r="32"/><circle cx="50" cy="50" r="8"/><path d="M50 18v8M50 74v8M18 50h8M74 50h8"/></symbol>
+            <symbol id="led-pullup" viewBox="0 0 100 100"><path d="M8 20h84M18 20v72M82 20v72M8 92h20M72 92h20"/><path d="M38 20v14a12 12 0 0 0 24 0V20"/></symbol>
+            <symbol id="led-box" viewBox="0 0 100 100"><rect x="12" y="26" width="76" height="62" rx="4"/><rect x="36" y="46" width="28" height="11" rx="5"/><path d="M12 40h76"/></symbol>
+            <symbol id="led-rope" viewBox="0 0 100 100"><rect x="14" y="8" width="10" height="28" rx="4"/><rect x="76" y="8" width="10" height="28" rx="4"/><path d="M19 36C2 100 98 100 81 36"/></symbol>
+            <symbol id="led-medball" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40"/><path d="M10 50Q50 28 90 50M10 50Q50 72 90 50M50 10Q28 50 50 90Q72 50 50 10"/></symbol>
+            <symbol id="led-rings" viewBox="0 0 100 100"><circle cx="28" cy="66" r="18"/><circle cx="72" cy="66" r="18"/><path d="M28 48V4M72 48V4M16 4h24M60 4h24"/></symbol>
+            <symbol id="led-stopwatch" viewBox="0 0 100 100"><circle cx="50" cy="56" r="34"/><path d="M42 12h16M50 12v10M50 56V34M50 56l16 10M80 26l6-6"/></symbol>
+        </defs>
+    </svg>
+
 
     <!-- HEADER NAVIGATION -->
     <header class="sticky top-0 z-40 bg-brandDark/95 backdrop-blur-md border-b border-slate-800">
@@ -178,7 +212,7 @@
     <!-- MAIN APP CONTENT -->
     <button id="photoPrompt" onclick="openProfileModal()" class="hidden w-full bg-brandCyan/10 border-b border-brandCyan/30 text-brandCyan text-xs font-extrabold px-4 py-2 text-center"><i class="fa-solid fa-images"></i> Add your profile photo</button>
     <div id="accountNotice" class="hidden bg-amber-500/10 border-b border-amber-500/30 text-amber-300 text-xs font-semibold px-4 py-2 text-center"></div>
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-28 md:pb-8 flex-grow w-full">
+    <main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-28 md:pb-8 flex-grow w-full">
 
         <!-- PAGE 1: HOME ("WHAT IS CROSSFIT" + BARBELL CALCULATOR) -->
         <section id="tab-home" class="space-y-10">
@@ -512,7 +546,7 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-brandDark border-t border-slate-800 py-6">
+    <footer class="relative z-10 bg-brandDark border-t border-slate-800 py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-500 space-y-2">
             <p>CrossFit Cainta East Ortigas • Sole Head Coach: <strong>Jason Truman</strong></p>
             <p>© 2026 CrossFit Cainta. All rights reserved.</p>
@@ -3232,6 +3266,40 @@ function membershipParts() {
         if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
             window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
         }
+    </script>
+
+    <script>
+    // LED neon equipment background (seeded so the layout is stable)
+    (function () {
+        const TYPES = ['barbell','kettlebell','dumbbell','plate','pullup','box','rope','medball','rings','stopwatch'];
+        const COLORS = ['#00ccff','#00ccff','#00a8ff','#ff2e93','#a259ff','#39ff88'];
+        function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+        function build() {
+            const root = document.getElementById('ledBg');
+            if (!root) return;
+            const w = window.innerWidth, h = window.innerHeight;
+            const cell = w < 640 ? 170 : 240;
+            const cols = Math.max(2, Math.ceil(w / cell)), rows = Math.max(3, Math.ceil(h / cell));
+            const cw = w / cols, ch = h / rows;
+            const r = rng(20240611);
+            let html = '', n = 0;
+            for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+                const size = Math.round((w < 640 ? 70 : 90) + r() * (w < 640 ? 40 : 70));
+                const left = Math.round(x * cw + r() * Math.max(0, cw - size));
+                const top = Math.round(y * ch + r() * Math.max(0, ch - size));
+                const type = TYPES[(n * 3 + Math.floor(r() * 3)) % TYPES.length];
+                const color = COLORS[Math.floor(r() * COLORS.length)];
+                const rot = Math.round(r() * 80 - 40);
+                const delay = (r() * 5).toFixed(2);
+                const flick = r() < 0.2 ? ' flick' : '';
+                html += `<svg class="led${flick}" viewBox="0 0 100 100" style="left:${left}px;top:${top}px;width:${size}px;height:${size}px;color:${color};transform:rotate(${rot}deg);animation-delay:-${delay}s"><use href="#led-${type}"/></svg>`;
+                n++;
+            }
+            root.innerHTML = html;
+        }
+        let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(build, 250); });
+        build();
+    })();
     </script>
 </body>
 </html>
