@@ -445,6 +445,23 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Percentage Chart -->
+                <div class="mt-8 bg-slate-900/60 p-5 rounded-2xl border border-slate-800/80">
+                    <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+                        <div>
+                            <h3 class="font-heading font-bold text-lg text-white flex items-center gap-2"><i class="fa-solid fa-percent text-brandCyan"></i> Percentage Chart</h3>
+                            <p id="pctSubtitle" class="text-slate-400 text-xs mt-1"></p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="number" id="pctCustom" min="1" max="300" step="0.5" placeholder="Custom %" onkeydown="if(event.key==='Enter')addCustomPct()" class="w-28 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-brandCyan">
+                            <button onclick="addCustomPct()" class="px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-xs font-bold text-brandCyan border border-slate-800">Add</button>
+                            <button onclick="resetPct()" class="px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-xs font-bold text-slate-300 border border-slate-800">Reset</button>
+                        </div>
+                    </div>
+                    <div id="pctGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+                    <p class="text-[11px] text-slate-500 mt-3">Loadable weight is rounded to the nearest plate increment. Percentages are of the Total Target Weight above.</p>
+                </div>
             </div>
             </div>
         </section>
@@ -1584,7 +1601,60 @@
             svg.innerHTML = out;
         }
 
+        // ===== PERCENTAGE CHART =====
+        const PCT_DEFAULT = [30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120];
+        let pctList = PCT_DEFAULT.slice();
+
+        function addCustomPct() {
+            const el = document.getElementById('pctCustom');
+            const v = parseFloat(el.value);
+            if (!(v > 0) || v > 300) return;
+            if (!pctList.includes(v)) { pctList.push(v); pctList.sort((a, b) => a - b); }
+            el.value = '';
+            renderPercentChart();
+        }
+
+        function resetPct() { pctList = PCT_DEFAULT.slice(); renderPercentChart(); }
+
+        function removePct(v) { pctList = pctList.filter(x => x !== v); renderPercentChart(); }
+
+        function platesLabel(total, barWeight, cfg, unit) {
+            if (total < barWeight) return '-';
+            let rem = (total - barWeight) / 2;
+            const parts = [];
+            cfg.plates.forEach(p => {
+                const q = Math.floor((rem + 1e-9) / p.w);
+                if (q > 0) { parts.push(q + 'x' + fmtNum(p.w)); rem = Math.round((rem - q * p.w) * 1000) / 1000; }
+            });
+            return parts.length ? parts.join(' + ') : 'Empty bar';
+        }
+
+        function renderPercentChart() {
+            const grid = document.getElementById('pctGrid');
+            if (!grid) return;
+            const cfg = BARBELL_UNITS[barbellUnit];
+            const unit = barbellUnit;
+            const base = parseFloat(document.getElementById('calcTarget').value) || 0;
+            const barWeight = parseFloat(document.getElementById('calcBar').value) || cfg.bars[0].w;
+            document.getElementById('pctSubtitle').innerText = base > 0 ? `Based on ${fmtNum(base)} ${unit}` : 'Enter a target weight to see percentages.';
+            if (!(base > 0)) { grid.innerHTML = ''; return; }
+            grid.innerHTML = pctList.map(pc => {
+                const exact = base * pc / 100;
+                const load = Math.round(exact / cfg.increment) * cfg.increment;
+                const diff = Math.abs(load - exact) > 0.005;
+                const hi = pc === 100 ? 'border-brandCyan' : 'border-slate-800';
+                const custom = PCT_DEFAULT.includes(pc) ? '' : `<button onclick="removePct(${pc})" title="Remove" class="absolute top-1.5 right-2 text-slate-500 hover:text-red-400 text-xs">&times;</button>`;
+                return `<div class="relative bg-slate-950 border ${hi} rounded-xl p-3">${custom}
+                    <div class="text-[11px] font-extrabold text-slate-400">${fmtNum(pc)}%</div>
+                    <div class="text-xl font-heading font-black text-brandCyan leading-tight">${fmtNum(load)} <span class="text-xs text-slate-500">${unit}</span></div>
+                    ${diff ? `<div class="text-[10px] text-slate-500">exact ${fmtNum(Math.round(exact * 100) / 100)} ${unit}</div>` : ''}
+                    <div class="text-[10px] text-slate-300 mt-1 font-semibold">${platesLabel(load, barWeight, cfg, unit)} <span class="text-slate-500">/ side</span></div>
+                </div>`;
+            }).join('');
+        }
+
         function calculateBarbell() {
+            renderPercentChart();
             const cfg = BARBELL_UNITS[barbellUnit];
             const unitText = barbellUnit;
             const select = document.getElementById('calcBar');
