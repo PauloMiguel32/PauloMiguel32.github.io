@@ -412,7 +412,7 @@
                         <div>
                             <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Total Target Weight</label>
                             <div class="relative">
-                                <input type="number" id="calcTarget" value="135" min="15" step="2.5" oninput="calculateBarbell()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-2xl font-bold text-white focus:outline-none focus:border-brandCyan">
+                                <input type="number" id="calcTarget" value="135" min="15" step="2.5" oninput="pctView=null;calculateBarbell()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-2xl font-bold text-white focus:outline-none focus:border-brandCyan">
                                 <span id="unitLabel" class="absolute right-4 top-3.5 text-xs font-bold text-slate-500">LB</span>
                             </div>
                         </div>
@@ -431,6 +431,7 @@
                     </div>
 
                     <div class="lg:col-span-2 flex flex-col justify-between bg-slate-950 p-6 rounded-2xl border border-slate-800/80 min-h-[300px]">
+                        <div id="pctBanner" class="hidden mb-3 flex items-center justify-between gap-2 text-xs font-bold bg-brandCyan/10 border border-brandCyan/40 text-brandCyan rounded-xl px-3 py-2"></div>
                         <div class="text-center">
                             <span class="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Weight Per Side</span>
                             <div id="sideWeightText" class="text-3xl sm:text-4xl font-heading font-black text-brandCyan mt-1">45 LBS</div>
@@ -1484,6 +1485,7 @@
             const select = document.getElementById('calcBar');
             const cfg = BARBELL_UNITS[unit];
             const changed = unit !== barbellUnit;
+            pctView = null;
 
             let target = parseFloat(input.value) || 0;
             const barIdx = select.selectedIndex >= 0 ? select.selectedIndex : 0;
@@ -1604,6 +1606,19 @@
         // ===== PERCENTAGE CHART =====
         const PCT_DEFAULT = [30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120];
         let pctList = PCT_DEFAULT.slice();
+        let pctView = null;   // {pc, weight} while a percentage card is selected
+
+        function showPct(pc) {
+            const cfg = BARBELL_UNITS[barbellUnit];
+            const base = parseFloat(document.getElementById('calcTarget').value) || 0;
+            const weight = Math.round((base * pc / 100) / cfg.increment) * cfg.increment;
+            pctView = { pc, weight };
+            calculateBarbell();
+            const svg = document.getElementById('barbellSvg');
+            if (svg && svg.scrollIntoView) svg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function clearPctView() { pctView = null; calculateBarbell(); }
 
         function addCustomPct() {
             const el = document.getElementById('pctCustom');
@@ -1643,12 +1658,14 @@
                 const load = Math.round(exact / cfg.increment) * cfg.increment;
                 const diff = Math.abs(load - exact) > 0.005;
                 const hi = pc === 100 ? 'border-brandCyan' : 'border-slate-800';
-                const custom = PCT_DEFAULT.includes(pc) ? '' : `<button onclick="removePct(${pc})" title="Remove" class="absolute top-1.5 right-2 text-slate-500 hover:text-red-400 text-xs">&times;</button>`;
-                return `<div class="relative bg-slate-950 border ${hi} rounded-xl p-3">${custom}
+                const custom = PCT_DEFAULT.includes(pc) ? '' : `<button onclick="event.stopPropagation();removePct(${pc})" title="Remove" class="absolute top-1.5 right-2 text-slate-500 hover:text-red-400 text-xs">&times;</button>`;
+                const sel = pctView && pctView.pc === pc ? 'ring-2 ring-brandCyan' : '';
+                return `<div onclick="showPct(${pc})" class="relative cursor-pointer hover:border-brandCyan transition bg-slate-950 border ${hi} ${sel} rounded-xl p-3">${custom}
                     <div class="text-[11px] font-extrabold text-slate-400">${fmtNum(pc)}%</div>
                     <div class="text-xl font-heading font-black text-brandCyan leading-tight">${fmtNum(load)} <span class="text-xs text-slate-500">${unit}</span></div>
                     ${diff ? `<div class="text-[10px] text-slate-500">exact ${fmtNum(Math.round(exact * 100) / 100)} ${unit}</div>` : ''}
                     <div class="text-[10px] text-slate-300 mt-1 font-semibold">${platesLabel(load, barWeight, cfg, unit)} <span class="text-slate-500">/ side</span></div>
+                    <div class="text-[10px] text-brandCyan font-bold mt-1">Tap to see plates</div>
                 </div>`;
             }).join('');
         }
@@ -1658,11 +1675,16 @@
             const cfg = BARBELL_UNITS[barbellUnit];
             const unitText = barbellUnit;
             const select = document.getElementById('calcBar');
-            const targetWeight = parseFloat(document.getElementById('calcTarget').value) || 0;
+            const targetWeight = pctView ? pctView.weight : (parseFloat(document.getElementById('calcTarget').value) || 0);
             const barWeight = parseFloat(select.value) || cfg.bars[0].w;
             const sideWeightText = document.getElementById('sideWeightText');
             const summary = document.getElementById('plateSummary');
             const barLabel = `${fmtNum(barWeight)} ${unitText.toUpperCase()} OLYMPIC BAR`;
+            const banner = document.getElementById('pctBanner');
+            if (pctView) {
+                banner.innerHTML = `<span>${fmtNum(pctView.pc)}% = ${fmtNum(pctView.weight)} ${unitText}</span><button onclick="clearPctView()" class="underline">Back to ${fmtNum(parseFloat(document.getElementById('calcTarget').value) || 0)} ${unitText}</button>`;
+                banner.classList.remove('hidden');
+            } else banner.classList.add('hidden');
 
             if (targetWeight < barWeight) {
                 sideWeightText.innerText = `0 ${unitText.toUpperCase()}`;
@@ -1704,6 +1726,7 @@
         }
 
         function setWeightPreset(value) {
+            pctView = null;
             document.getElementById('calcTarget').value = value;
             calculateBarbell();
         }
