@@ -293,6 +293,7 @@
                     </div>
 
                     <div id="calendarGrid" class="grid grid-cols-7 gap-2"></div>
+                    <div class="flex flex-wrap gap-x-4 gap-y-1 mt-4 text-[11px] text-slate-400"><span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-400"></span> Holiday: 10:30 AM CrossFit &middot; 4:00 PM Hybrid</span><span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400"></span> Event / comp</span></div>
                 </div>
 
                 <div class="lg:col-span-5 bg-brandCard p-6 rounded-3xl border border-slate-800 flex flex-col justify-between">
@@ -1201,7 +1202,7 @@
                 if (tabName === 'membersboard') renderMembersBoard();
                 if (tabName === 'formcheck') renderFormChecks();
                 if (tabName === 'admin') renderAdminPanel();
-                if (tabName === 'schedule') renderScheduleDetails();
+                if (tabName === 'schedule') { renderScheduleDetails(); loadHolidays(); }
                 if (tabName === 'prs') renderPrs();
                 if (tabName === 'home') renderHome();
                 if (tabName === 'events') renderEvents();
@@ -1648,8 +1649,10 @@
                 const d = new Date(year, month, day);
                 const isSelected = d.toDateString() === selectedCalendarDate.toDateString();
                 const isToday = d.toDateString() === new Date().toDateString();
-                const hasEv = eventsOn(isoDate(d)).length > 0;
-                html += `<button onclick="selectCalendarDate(${year}, ${month}, ${day})" class="h-12 sm:h-16 rounded-xl font-bold text-sm sm:text-lg flex flex-col items-center justify-center transition ${isSelected ? 'bg-brandCyan text-slate-950 font-black shadow-lg shadow-brandCyan/20' : 'bg-slate-900/60 hover:bg-slate-800 text-slate-300'} ${isToday && !isSelected ? 'ring-2 ring-brandCyan/60' : ''}">${day}${hasEv ? `<span class="block w-1.5 h-1.5 mt-0.5 rounded-full ${isSelected ? 'bg-slate-950' : 'bg-amber-400'}"></span>` : ''}</button>`;
+                const ds = isoDate(d), hasEv = eventsOn(ds).length > 0, hol = HOLIDAYS[ds];
+                const dots = (hasEv || hol) ? `<span class="flex gap-1 mt-0.5">${hol ? `<span class="block w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-slate-950' : 'bg-rose-400'}"></span>` : ''}${hasEv ? `<span class="block w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-slate-950' : 'bg-amber-400'}"></span>` : ''}</span>` : '';
+                const tone = isSelected ? 'bg-brandCyan text-slate-950 font-black shadow-lg shadow-brandCyan/20' : hol ? 'bg-rose-500/15 border border-rose-500/40 hover:bg-rose-500/25 text-rose-200' : 'bg-slate-900/60 hover:bg-slate-800 text-slate-300';
+                html += `<button onclick="selectCalendarDate(${year}, ${month}, ${day})" ${hol ? `title="${fcEsc(hol)}"` : ''} class="h-12 sm:h-16 rounded-xl font-bold text-sm sm:text-lg flex flex-col items-center justify-center transition ${tone} ${isToday && !isSelected ? 'ring-2 ring-brandCyan/60' : ''}">${day}${dots}</button>`;
             }
             grid.innerHTML = html;
             document.getElementById('calendarMonthYear').innerText = new Date(year, month, 1).toLocaleString('default', { month: 'long', year: 'numeric' });
@@ -1674,7 +1677,9 @@
             evening1: { title: 'CrossFit Evening Session 1', time: '5:30 PM - 6:45 PM', h: 17, m: 30, color: 'text-brandCyan' },
             evening2: { title: 'CrossFit Evening Session 2', time: '7:00 PM - 8:15 PM', h: 19, m: 0, color: 'text-brandCyan' },
             hybrid:   { title: 'Hybrid Conditioning & Mobility', time: '6:00 PM - 7:30 PM', h: 18, m: 0, color: 'text-purple-400' },
-            saturday: { title: 'Saturday CrossFit Morning Blast', time: '10:30 AM - 12:00 PM', h: 10, m: 30, color: 'text-amber-400' }
+            saturday: { title: 'Saturday CrossFit Morning Blast', time: '10:30 AM - 12:00 PM', h: 10, m: 30, color: 'text-amber-400' },
+            holiday_cf:     { title: 'Holiday CrossFit', time: '10:30 AM - 12:00 PM', h: 10, m: 30, color: 'text-amber-400' },
+            holiday_hybrid: { title: 'Holiday Hybrid Conditioning & Mobility', time: '4:00 PM - 5:30 PM', h: 16, m: 0, color: 'text-purple-400' }
         };
         const DAY_PLAN = {
             1: ['CrossFit Day', 'bg-blue-500/20 text-blue-400 border-blue-500/30', ['evening1', 'evening2']],
@@ -1684,6 +1689,62 @@
             4: ['Hybrid Class', 'bg-purple-500/20 text-purple-400 border-purple-500/30', ['hybrid']],
             6: ['Weekend Session', 'bg-amber-500/20 text-amber-400 border-amber-500/30', ['saturday']]
         };
+        // ---- Holidays: on a holiday the day runs 10:30 AM CrossFit + 4:00 PM Hybrid ----
+        // Built-in Philippine list (used until the holidays table loads, or if v17 SQL was not run yet).
+        // Once the table loads, the Head Coach can mark / unmark any date from the Schedule page.
+        const HOLIDAY_FALLBACK = {
+            '2026-11-02': "All Souls' Day", '2026-11-30': 'Bonifacio Day', '2026-12-08': 'Feast of the Immaculate Conception',
+            '2026-12-24': 'Christmas Eve', '2026-12-25': 'Christmas Day', '2026-12-30': 'Rizal Day', '2026-12-31': 'Last Day of the Year',
+            '2027-01-01': "New Year's Day", '2027-02-06': 'Chinese New Year', '2027-03-25': 'Maundy Thursday', '2027-03-26': 'Good Friday',
+            '2027-03-27': 'Black Saturday', '2027-04-09': 'Araw ng Kagitingan', '2027-05-01': 'Labor Day', '2027-06-12': 'Independence Day',
+            '2027-08-21': 'Ninoy Aquino Day', '2027-08-30': 'National Heroes Day', '2027-11-01': "All Saints' Day", '2027-11-02': "All Souls' Day",
+            '2027-11-30': 'Bonifacio Day', '2027-12-08': 'Feast of the Immaculate Conception', '2027-12-24': 'Christmas Eve',
+            '2027-12-25': 'Christmas Day', '2027-12-30': 'Rizal Day', '2027-12-31': 'Last Day of the Year'
+        };
+        let HOLIDAYS = Object.assign({}, HOLIDAY_FALLBACK), holidaysAt = 0;
+        const HOLIDAY_BADGE = 'bg-rose-500/20 text-rose-300 border-rose-500/30';
+        const HOLIDAY_PLAN = ['Holiday', HOLIDAY_BADGE, ['holiday_cf', 'holiday_hybrid']];
+        function planFor(d) { return HOLIDAYS[isoDate(d)] ? HOLIDAY_PLAN : DAY_PLAN[d.getDay()]; }
+        async function loadHolidays(force) {
+            if (!sb || (!force && Date.now() - holidaysAt < 30000)) return;
+            holidaysAt = Date.now();
+            try {
+                const { data, error } = await sb.from('holidays').select('holiday_date,name');
+                if (error || !Array.isArray(data)) return;
+                const next = {}; data.forEach(h => { next[h.holiday_date] = h.name; });
+                if (JSON.stringify(next) === JSON.stringify(HOLIDAYS)) return;
+                HOLIDAYS = next;
+                renderCalendar(); renderScheduleDetails(); renderContact();
+            } catch (e) {}
+        }
+        function holidayBannerHtml(ds) {
+            if (!HOLIDAYS[ds]) return '';
+            return `<div class="p-4 rounded-2xl border border-rose-500/40 bg-rose-500/10 flex items-center gap-3"><span class="text-2xl">&#127881;</span><span class="min-w-0"><span class="block text-[10px] font-bold uppercase tracking-widest text-rose-300">Holiday schedule</span><span class="block text-sm font-bold text-white">${fcEsc(HOLIDAYS[ds])}</span><span class="block text-xs text-slate-400">10:30 AM CrossFit &middot; 4:00 PM Hybrid</span></span></div>`;
+        }
+        function holidayAdminHtml(ds) {
+            if (activeRole !== 'Head Coach') return '';
+            const on = !!HOLIDAYS[ds];
+            return `<button onclick="toggleHoliday('${ds}')" class="w-full px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold border border-slate-700 ${on ? 'text-rose-300' : 'text-slate-200'}"><i class="fa-solid fa-calendar-${on ? 'xmark' : 'plus'} mr-1"></i> ${on ? 'Remove holiday' : 'Mark this date as a holiday'}</button>`;
+        }
+        async function toggleHoliday(ds) {
+            if (!sb || activeRole !== 'Head Coach') return;
+            const hint = '\n\n(If this keeps failing, run supabase-update-v17.sql once in the SQL Editor.)';
+            if (HOLIDAYS[ds]) {
+                if (!confirm('Remove "' + HOLIDAYS[ds] + '" as a holiday? Classes go back to the normal schedule for this date.')) return;
+                const { error } = await sb.from('holidays').delete().eq('holiday_date', ds);
+                if (error) { alert('Could not remove: ' + error.message + hint); return; }
+                delete HOLIDAYS[ds];
+            } else {
+                const name = (prompt('Holiday name?', 'Holiday') || '').trim().slice(0, 80);
+                if (!name) return;
+                const { error } = await sb.from('holidays').insert({ holiday_date: ds, name });
+                if (error) { alert('Could not save: ' + error.message + hint); return; }
+                HOLIDAYS[ds] = name;
+            }
+            holidaysAt = 0;
+            renderCalendar(); renderScheduleDetails(); renderContact();
+        }
+
         let scheduleReq = 0;
         function isoDate(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 
@@ -1693,12 +1754,12 @@
             document.getElementById('selectedDateTitle').innerText = d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
             const container = document.getElementById('classSlotsContainer');
             const badge = document.getElementById('dayBadge');
-            const plan = DAY_PLAN[d.getDay()];
+            const plan = planFor(d);
 
             if (!plan) {
                 badge.innerText = 'Rest Day';
                 badge.className = 'px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700 text-xs font-bold';
-                container.innerHTML = scheduleEventsHtml(isoDate(d)) + `<div class="p-8 text-center bg-slate-900/40 rounded-2xl border border-slate-800 text-slate-400 text-xs"><i class="fa-solid fa-bed text-2xl mb-2 text-slate-600"></i><p class="font-bold text-slate-300">Sunday Recovery & Rest Day</p><p class="mt-1">No scheduled group classes. Rest up for Monday!</p></div>`;
+                container.innerHTML = scheduleEventsHtml(isoDate(d)) + `<div class="p-8 text-center bg-slate-900/40 rounded-2xl border border-slate-800 text-slate-400 text-xs"><i class="fa-solid fa-bed text-2xl mb-2 text-slate-600"></i><p class="font-bold text-slate-300">Sunday Recovery & Rest Day</p><p class="mt-1">No scheduled group classes. Rest up for Monday!</p></div>` + holidayAdminHtml(isoDate(d));
                 return;
             }
             badge.innerText = plan[0];
@@ -1708,7 +1769,7 @@
             const counts = {}, mine = {}, names = {};
             const draw = loaded => {
                 const approved = !!currentProfile && currentProfile.status === 'approved';
-                container.innerHTML = scheduleEventsHtml(ds) + plan[2].map(key => {
+                container.innerHTML = scheduleEventsHtml(ds) + holidayBannerHtml(ds) + plan[2].map(key => {
                     const s = SLOT_DEFS[key];
                     const taken = counts[key] || 0;
                     const started = Date.now() > new Date(d.getFullYear(), d.getMonth(), d.getDate(), s.h, s.m).getTime();
@@ -1721,7 +1782,7 @@
                     else btn = `<button onclick="bookSlot('${ds}','${key}')" class="px-4 py-2 bg-brandCyan hover:bg-brandCyanBright text-slate-950 font-extrabold text-xs rounded-xl transition">Reserve</button>`;
                     const who = (isCoachRole() && names[key] && names[key].length) ? `<div class="text-[11px] text-slate-400 mt-2 leading-relaxed">Booked: ${names[key].map(fcEsc).join(', ')}</div>` : '';
                     return `<div class="p-4 bg-slate-900 rounded-2xl border border-slate-800"><div class="flex items-center justify-between gap-3"><div><div class="text-sm font-bold text-white">${s.title}</div><div class="text-xs ${s.color} font-semibold">${s.time}</div><div class="text-[11px] text-slate-500 mt-0.5">${loaded ? `${taken} of ${CLASS_CAP} spots taken` : 'Checking spots...'}</div></div>${btn}</div>${who}</div>`;
-                }).join('');
+                }).join('') + holidayAdminHtml(ds);
             };
             draw(false);
             if (!sb) return;
@@ -2052,7 +2113,7 @@
         let wodDay = new Date(); wodDay = new Date(wodDay.getFullYear(), wodDay.getMonth(), wodDay.getDate());
         let currentWod = null;
 
-        function renderHome() { renderAnnouncements(); renderWod(); renderMembershipHome(); renderHomeEvents(); renderContact(); }
+        function renderHome() { renderAnnouncements(); renderWod(); renderMembershipHome(); renderHomeEvents(); renderContact(); loadHolidays(); }
 
         async function renderAnnouncements() {
             const box = document.getElementById('homeAnnouncements');
@@ -2468,11 +2529,27 @@ function membershipParts() {
         }
         function renderContact() {
             const box = document.getElementById('homeContact'); if (!box) return;
-            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            const hours = days.map((n, i) => `<div class="flex justify-between gap-3"><span class="font-bold text-slate-200">${n}</span><span class="text-right">${DAY_PLAN[i] ? DAY_PLAN[i][2].map(k => SLOT_DEFS[k].time).join(' · ') : 'Rest day'}</span></div>`).join('');
+            const names = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const mon = new Date(); mon.setHours(0, 0, 0, 0); mon.setDate(mon.getDate() - ((mon.getDay() + 6) % 7));
+            const todayStr = isoDate(new Date());
+            const pillColor = { evening1: 'text-brandCyan', evening2: 'text-brandCyan', hybrid: 'text-purple-400', saturday: 'text-amber-400', holiday_cf: 'text-amber-400', holiday_hybrid: 'text-purple-400' };
+            const week = [0, 1, 2, 3, 4, 5, 6].map(i => {
+                const d = new Date(mon); d.setDate(mon.getDate() + i);
+                const ds = isoDate(d), plan = planFor(d), isToday = ds === todayStr, hol = HOLIDAYS[ds];
+                const badge = plan ? `<span class="shrink-0 px-2.5 py-0.5 rounded-full border text-[10px] font-bold ${plan[1]}">${plan[0]}</span>` : '';
+                const todayTag = isToday ? '<span class="px-2.5 py-0.5 rounded-full bg-brandCyan text-slate-950 text-[10px] font-extrabold uppercase tracking-wide">Today</span>' : '';
+                const holLine = hol ? `<div class="text-[11px] font-semibold text-rose-300 mt-1">${fcEsc(hol)} &middot; ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>` : '';
+                const body = plan
+                    ? `<div class="flex flex-wrap gap-2 mt-2.5">${plan[2].map(k => `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/40 border border-slate-700 text-xs font-bold text-white"><i class="fa-solid fa-clock text-[11px] ${pillColor[k]}"></i>${SLOT_DEFS[k].time}</span>`).join('')}</div>`
+                    : `<div class="text-xs italic text-slate-500 mt-2"> Rest day - recover well <i class="fa-solid fa-moon text-brandCyan/60 not-italic ml-0.5"></i></div>`;
+                const tone = isToday ? 'border-brandCyan/70 bg-gradient-to-br from-brandCyan/15 to-slate-900/40' : plan ? 'border-slate-800 bg-slate-900/60' : 'border-slate-800/70 bg-slate-900/30';
+                return `<div class="rounded-2xl border p-3 sm:p-3.5 ${tone}"><div class="flex items-center justify-between gap-2"><div class="flex items-center gap-2 flex-wrap"><span class="font-heading font-bold text-base ${isToday ? 'text-brandCyan' : plan ? 'text-white' : 'text-slate-400'}">${names[d.getDay()]}</span>${todayTag}</div>${badge}</div>${holLine}${body}</div>`;
+            }).join('');
+            const hours = `<div class="relative overflow-hidden bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6"><div class="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-brandCyan/10 blur-3xl"></div><div class="relative"><h2 class="font-heading font-bold text-xl text-white flex items-center gap-2.5"><span class="w-6 h-6 rounded-full bg-brandCyan text-slate-950 flex items-center justify-center text-xs"><i class="fa-solid fa-clock"></i></span> Class Hours</h2><p class="text-xs text-slate-400 mt-1 mb-4">Weekly schedule. Reserve your spot from the Schedule page.</p><div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${week}</div></div></div>`;
             const q = encodeURIComponent(CONTACT.mapsQuery), lnk = 'px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs font-bold';
-            const contact = `<div class="text-xs text-slate-400 space-y-1">${hours}</div><div class="flex flex-wrap gap-2 pt-2"><a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener" class="${lnk}"><i class="fa-solid fa-location-dot text-brandCyan"></i> Open in Maps</a><a href="https://www.google.com/maps/dir/?api=1&destination=${q}" target="_blank" rel="noopener" class="${lnk}">Directions</a>${CONTACT.phone ? `<a href="tel:${fcEsc(CONTACT.phone)}" class="${lnk}"><i class="fa-solid fa-phone text-brandCyan"></i> Call</a>` : ''}${CONTACT.facebook ? `<a href="${fcEsc(CONTACT.facebook)}" target="_blank" rel="noopener" class="${lnk}">Facebook</a>` : ''}${CONTACT.instagram ? `<a href="${fcEsc(CONTACT.instagram)}" target="_blank" rel="noopener" class="${lnk}">Instagram</a>` : ''}</div>`;
-            box.innerHTML = `<div class="bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-3"><h2 class="font-heading font-bold text-lg text-white flex items-center gap-2"><i class="fa-solid fa-location-dot text-brandCyan"></i> Find Us &amp; Hours</h2>${contact}</div>`;
+            const links = `<a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener" class="${lnk}"><i class="fa-solid fa-location-dot text-brandCyan"></i> Open in Maps</a><a href="https://www.google.com/maps/dir/?api=1&destination=${q}" target="_blank" rel="noopener" class="${lnk}">Directions</a>${CONTACT.phone ? `<a href="tel:${fcEsc(CONTACT.phone)}" class="${lnk}"><i class="fa-solid fa-phone text-brandCyan"></i> Call</a>` : ''}${CONTACT.facebook ? `<a href="${fcEsc(CONTACT.facebook)}" target="_blank" rel="noopener" class="${lnk}">Facebook</a>` : ''}${CONTACT.instagram ? `<a href="${fcEsc(CONTACT.instagram)}" target="_blank" rel="noopener" class="${lnk}">Instagram</a>` : ''}`;
+            const find = `<div class="bg-brandCard border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-3"><h2 class="font-heading font-bold text-xl text-white flex items-center gap-2.5"><i class="fa-solid fa-location-dot text-brandCyan"></i> Find Us</h2><div class="flex flex-wrap gap-2">${links}</div></div>`;
+            box.innerHTML = `<div class="space-y-6">${hours}${find}</div>`;
         }
 
         async function signWaiver() {
